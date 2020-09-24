@@ -1,7 +1,7 @@
 ﻿
 public class BoardTile : Tile
 {
-    public void SetBoardPosition(int row, int column)
+    public void SetBoardTile(int row, int column)
     {
         SetInitialConfig(row, column);
     }

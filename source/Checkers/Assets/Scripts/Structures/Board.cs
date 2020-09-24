@@ -14,7 +14,16 @@ public class Board : MonoBehaviour
     [SerializeField]
     private BoardTile tilePrefab;
     [SerializeField]
-    private GameObject tileParent;
+    private GameObject tilesParent;
+
+    [Header("Pieces prefab to instantiate")]
+    [SerializeField]
+    private BoardPiece piecePrefab;
+    [SerializeField]
+    private GameObject piecesParent;
+
+    private List<BoardPiece> listBoardPiecesPlayer = new List<BoardPiece>();
+    private List<BoardPiece> listBoardPiecesComp = new List<BoardPiece>();
 
     private BoardTile[,] board;
 
@@ -27,9 +36,10 @@ public class Board : MonoBehaviour
             if (targetSprite != null)
             {
                 Vector2 offset = targetSprite.bounds.size;
-                Vector2 baseSpaw = SetBaseSpaw(new Vector2(0f, 0f), offset);
+                Vector2 baseSpaw = SetBaseSpaw(transform.position, offset);
 
                 CreateBoard(offset, baseSpaw);
+                SpawPieces();
             }
             else
                 Debug.Log("Class Board, method Start: Cant acess tile prefab sprite");
@@ -52,10 +62,10 @@ public class Board : MonoBehaviour
                                                     0f),
                                         tilePrefab.transform.rotation);
 
-                tile.transform.SetParent(tileParent.transform);
+                tile.transform.SetParent(tilesParent.transform);
 
                 board[i, j] = tile;
-                board[i, j].SetBoardPosition(i, j);
+                board[i, j].SetBoardTile(i, j);
             }
         }
     }
@@ -76,5 +86,50 @@ public class Board : MonoBehaviour
         }
 
         return baseSpaw;
+    }
+
+    private void SpawPieces()
+    {
+        if (board != null)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    if (!board[i, j].IsMovimentAllowed()) continue;
+
+                    BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
+
+                    piece.transform.position = board[i, j].transform.position;
+                    piece.SetBoardPiece(false);
+
+                    listBoardPiecesComp.Add(piece);
+                }
+            }
+
+            for (int i = rows - 1; i > rows - 4; i--)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    if (!board[i, j].IsMovimentAllowed()) continue;
+
+                    BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
+
+                    piece.transform.position = board[i, j].transform.position;
+                    piece.SetBoardPiece(true);
+
+                    listBoardPiecesPlayer.Add(piece);
+                }
+            }
+        }
+    }
+
+    public bool OnBoardLimits(int row, int column)
+    {
+        if (row < 0 || row >= rows) return false;
+
+        if (column < 0 || column >= columns) return false;
+
+        return true;
     }
 }
