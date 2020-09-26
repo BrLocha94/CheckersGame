@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Collider2D))]
 public class Piece : SpriteBase
 {
     [Header("General colors to use on this board")]

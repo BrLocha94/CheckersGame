@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2471573460488377820}
   - component: {fileID: 2471573460488377823}
   - component: {fileID: 114188616979017936}
+  - component: {fileID: 50069679478164274}
   - component: {fileID: 61281597764485376}
   m_Layer: 0
   m_Name: Tile
@@ -96,7 +97,28 @@ MonoBehaviour:
   colorBaseWhite: {r: 1, g: 1, b: 1, a: 1}
   colorBaseBlack: {r: 0, g: 0, b: 0, a: 1}
   colorAllowed: {r: 0.1715023, g: 0.7735849, b: 0.1715023, a: 1}
-  colorDenied: {r: 0.8679245, g: 0.10234957, b: 0.10234957, a: 1}
+  colorPreferencial: {r: 0.990566, g: 0.9784249, b: 0.21960661, a: 1}
+--- !u!50 &50069679478164274
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2471573460488377822}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7
 --- !u!61 &61281597764485376
 BoxCollider2D:
   m_ObjectHideFlags: 0

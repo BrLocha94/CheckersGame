@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
 public class Tile : SpriteBase
 {
     [Header("General colors to use on this board")]
@@ -13,7 +12,7 @@ public class Tile : SpriteBase
     [SerializeField]
     private Color colorAllowed;
     [SerializeField]
-    private Color colorDenied;
+    private Color colorPreferencial;
 
     public int row { get; private set; }
     public int column { get; private set; }
@@ -46,19 +45,6 @@ public class Tile : SpriteBase
     private Color GetBaseColor()
     {
         return (baseTile == TileBase.White) ? colorBaseWhite : colorBaseBlack;
-    }
-
-    public bool IsMovimentAllowed()
-    {
-        return (baseTile == TileBase.Black) ? true : false;
-    }
-
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag.Equals("Piece"))
-        {
-            Debug.Log("Collided with piece");
-        }    
     }
 }
 

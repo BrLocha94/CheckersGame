@@ -2,8 +2,8 @@
 
 public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
 {
-    private T _instance;
-    public T instance
+    private static T _instance;
+    public static T instance
     {
         get
         {

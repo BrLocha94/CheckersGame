@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Board : MonoBehaviour
+public class Board : MonoSingleton<Board>
 {
     [Header("Board basic dimensions")]
     [SerializeField]
@@ -26,6 +26,8 @@ public class Board : MonoBehaviour
     private List<BoardPiece> listBoardPiecesComp = new List<BoardPiece>();
 
     private BoardTile[,] board;
+
+    #region Board Creation
 
     void Start()
     {
@@ -124,12 +126,24 @@ public class Board : MonoBehaviour
         }
     }
 
-    public bool OnBoardLimits(int row, int column)
+    #endregion
+
+    private bool OnBoardLimits(int row, int column)
     {
         if (row < 0 || row >= rows) return false;
 
         if (column < 0 || column >= columns) return false;
 
         return true;
+    }
+
+    public void BoardPieceClicked(BoardPiece target)
+    {
+
+    }
+
+    public void BoardTileClickd(BoardTile target)
+    {
+
     }
 }
