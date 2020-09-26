@@ -4,9 +4,11 @@
 [RequireComponent(typeof(Collider2D))]
 public class BoardPiece : Piece
 {
-    public void SetBoardPiece(bool isPlayer)
+    public BoardTile currentTile { get; set; }
+
+    public void InitializeBoardPiece(bool isPlayer, bool isTop)
     {
-        SetInitialConfig(isPlayer);
+        SetInitialConfig(isPlayer, isTop);
     }
 
     #region Mouse Click Treatement

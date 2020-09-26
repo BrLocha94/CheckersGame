@@ -6,7 +6,7 @@ public class BoardTile : Tile
 {
     public BoardPiece currentPiece { get; set; }
 
-    public void SetBoardTile(int row, int column)
+    public void InitializeBoardTile(int row, int column)
     {
         SetInitialConfig(row, column);
     }
@@ -14,6 +14,16 @@ public class BoardTile : Tile
     public bool IsMovimentAllowed()
     {
         return (baseTile == TileBase.Black) ? true : false;
+    }
+
+    public void ApplyColorEffect(bool isAllowed)
+    {
+        ColorEffect(isAllowed);
+    }
+
+    public void RemoveColorEffect()
+    {
+        ApplyBaseColor();
     }
 
     #region Mouse Click Treatement

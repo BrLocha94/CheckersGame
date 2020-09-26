@@ -39,7 +39,20 @@ public class Tile : SpriteBase
                 baseTile = TileBase.White;
         }
 
+        ApplyBaseColor();
+    }
+
+    protected void ApplyBaseColor()
+    {
         spriteRenderer.color = GetBaseColor();
+    }
+
+    protected void ColorEffect(bool isAllowed)
+    {
+        if (isAllowed == true)
+            spriteRenderer.color = colorAllowed;
+        else
+            spriteRenderer.color = colorPreferencial;
     }
 
     private Color GetBaseColor()

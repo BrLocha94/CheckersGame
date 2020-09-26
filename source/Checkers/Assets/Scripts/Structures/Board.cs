@@ -27,6 +27,9 @@ public class Board : MonoSingleton<Board>
 
     private BoardTile[,] board;
 
+    BoardPiece currentPiece = null;
+    List<BoardTile> listCurrentTiles = new List<BoardTile>();
+
     #region Board Creation
 
     void Start()
@@ -67,7 +70,7 @@ public class Board : MonoSingleton<Board>
                 tile.transform.SetParent(tilesParent.transform);
 
                 board[i, j] = tile;
-                board[i, j].SetBoardTile(i, j);
+                board[i, j].InitializeBoardTile(i, j);
             }
         }
     }
@@ -94,6 +97,7 @@ public class Board : MonoSingleton<Board>
     {
         if (board != null)
         {
+            //Initialize pieces on TOP
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < columns; j++)
@@ -103,12 +107,16 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.SetBoardPiece(false);
+                    piece.InitializeBoardPiece(false, true);
+
+                    piece.currentTile = board[i, j];
+                    board[i, j].currentPiece = piece;
 
                     listBoardPiecesComp.Add(piece);
                 }
             }
 
+            //Initialize pieces on DOWN
             for (int i = rows - 1; i > rows - 4; i--)
             {
                 for (int j = 0; j < columns; j++)
@@ -118,7 +126,10 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.SetBoardPiece(true);
+                    piece.InitializeBoardPiece(true, false);
+
+                    piece.currentTile = board[i, j];
+                    board[i, j].currentPiece = piece;
 
                     listBoardPiecesPlayer.Add(piece);
                 }
@@ -128,6 +139,50 @@ public class Board : MonoSingleton<Board>
 
     #endregion
 
+    public void BoardPieceClicked(BoardPiece target)
+    {
+        if (currentPiece != null) return;
+
+        //Check logic and if can move currentPiece == target
+        if (target.IsKing())
+        {
+
+        }
+        else
+        {
+            if (target.IsTopMoviment())
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    private bool CheckBoardTile(int row, int column, PieceTypes targetType)
+    {
+        if (OnBoardLimits(row, column) == false) return false;
+
+        //Implement rules logic
+
+        //Add or not tile to listCurrentTiles and aplly color strategy
+
+        //Continue or not
+
+        return true;
+    }
+
+    public void BoardTileClickd(BoardTile target)
+    {
+        if (currentPiece == null) return;
+
+        if (listCurrentTiles.Count <= 0) return;
+
+        //Check target on listCurrentTiles and aplly color strategy
+    }
+
     private bool OnBoardLimits(int row, int column)
     {
         if (row < 0 || row >= rows) return false;
@@ -135,15 +190,5 @@ public class Board : MonoSingleton<Board>
         if (column < 0 || column >= columns) return false;
 
         return true;
-    }
-
-    public void BoardPieceClicked(BoardPiece target)
-    {
-
-    }
-
-    public void BoardTileClickd(BoardTile target)
-    {
-
     }
 }
