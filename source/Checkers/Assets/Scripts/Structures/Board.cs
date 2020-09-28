@@ -211,6 +211,15 @@ public class Board : MonoSingleton<Board>
         if (listCurrentTiles.Count <= 0) return;
 
         //Check target on listCurrentTiles and aplly color strategy
+
+        for(int i = 0; i < listCurrentTiles.Count; i++)
+        {
+            if(target.Equals(listCurrentTiles[i]))
+            {
+                listCurrentTiles[i].RemoveColorEffect();
+            }
+        }
+        
     }
 
     private bool OnBoardLimits(int row, int column)
