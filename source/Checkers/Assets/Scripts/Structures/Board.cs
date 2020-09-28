@@ -107,7 +107,7 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.InitializeBoardPiece(false, true);
+                    piece.InitializeBoardPiece(false, false);
 
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
@@ -126,7 +126,7 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.InitializeBoardPiece(true, false);
+                    piece.InitializeBoardPiece(true, true);
 
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
