@@ -139,6 +139,17 @@ public class Board : MonoSingleton<Board>
 
     #endregion
 
+    void Update()
+    {
+        if(currentPiece != null && listCurrentTiles.Count > 0)
+        {
+            if (Input.GetMouseButton(1))
+            {
+                ClearLastTileEffects();
+            }
+        }    
+    }
+
     public void BoardPieceClicked(BoardPiece target)
     {
         if (currentPiece != null) return;
@@ -156,17 +167,24 @@ public class Board : MonoSingleton<Board>
 
             if (target.IsTopMoviment())
             {
+                if (CheckBoardTile(actualRow - 1, actualCol + 1) || CheckBoardTile(actualRow - 1, actualCol + 1))
+                    currentPiece = target;
+
                 //color effects
+                /*
                 if(OnBoardLimits(actualRow - 1, actualCol + 1) && board[actualRow - 1, actualCol + 1].currentPiece == null) //check top right diagonal
                 {
                     board[actualRow - 1, actualCol + 1].ApplyColorEffect(true);
                     listCurrentTiles.Add(board[actualRow - 1, actualCol + 1]);
+                    currentPiece = target;
                 }
+                */
                 
                 if(OnBoardLimits(actualRow - 1, actualCol - 1) && board[actualRow - 1, actualCol - 1].currentPiece == null) //check top left diagonal
                 {
                     board[actualRow - 1, actualCol - 1].ApplyColorEffect(true);
                     listCurrentTiles.Add(board[actualRow - 1, actualCol - 1]);
+                    currentPiece = target;
                 }
 
             }
@@ -177,31 +195,32 @@ public class Board : MonoSingleton<Board>
                 {
                     board[actualRow + 1, actualCol - 1].ApplyColorEffect(true);
                     listCurrentTiles.Add(board[actualRow + 1, actualCol - 1]);
+                    currentPiece = target;
                 }
 
                 if(OnBoardLimits(actualRow + 1, actualCol + 1) && board[actualRow + 1, actualCol + 1].currentPiece == null) //check bottom left diagonal
                 {
                     board[actualRow + 1, actualCol + 1].ApplyColorEffect(true);
-                    listCurrentTiles.Add(board[actualRow + 1, actualCol - 1]);
+                    listCurrentTiles.Add(board[actualRow + 1, actualCol + 1]);
+                    currentPiece = target;
                 }
 
             }
         }
     }
 
-    private bool CheckBoardTile(int row, int column, PieceTypes targetType)
+    private bool CheckBoardTile(int row, int column, PieceTypes targetType = PieceTypes.Null)
     {
         if (OnBoardLimits(row, column) == false) return false;
 
-        //Implement rules logic
+        if(board[row, column].currentPiece == null)
+        {
+            board[row, column].ApplyColorEffect(true);
+            listCurrentTiles.Add(board[row, column ]);
+            return true;
+        }
 
-        //Add or not tile to listCurrentTiles and aplly color strategy
-
-        //Continue or not
-
-        
-
-        return true;
+        return false;
     }
 
     public void BoardTileClickd(BoardTile target)
@@ -219,7 +238,17 @@ public class Board : MonoSingleton<Board>
                 listCurrentTiles[i].RemoveColorEffect();
             }
         }
-        
+    }
+
+    private void ClearLastTileEffects()
+    {
+        for (int i = listCurrentTiles.Count - 1; i >= 0; i--)
+        {
+            listCurrentTiles[i].RemoveColorEffect();
+            listCurrentTiles.RemoveAt(i);
+        }
+
+        currentPiece = null;
     }
 
     private bool OnBoardLimits(int row, int column)
