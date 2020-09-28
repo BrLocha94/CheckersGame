@@ -143,19 +143,47 @@ public class Board : MonoSingleton<Board>
     {
         if (currentPiece != null) return;
 
+        int actualRow = target.currentTile.row;
+        int actualCol = target.currentTile.column;
+
         //Check logic and if can move currentPiece == target
         if (target.IsKing())
         {
-
+            //color effects
         }
         else
         {
+
             if (target.IsTopMoviment())
             {
+                //color effects
+                if(OnBoardLimits(actualRow - 1, actualCol + 1) && board[actualRow - 1, actualCol + 1].currentPiece == null) //check top right diagonal
+                {
+                    board[actualRow - 1, actualCol + 1].ApplyColorEffect(true);
+                    listCurrentTiles.Add(board[actualRow - 1, actualCol + 1]);
+                }
+                
+                if(OnBoardLimits(actualRow - 1, actualCol - 1) && board[actualRow - 1, actualCol - 1].currentPiece == null) //check top left diagonal
+                {
+                    board[actualRow - 1, actualCol - 1].ApplyColorEffect(true);
+                    listCurrentTiles.Add(board[actualRow - 1, actualCol - 1]);
+                }
 
             }
             else
             {
+                //color effects
+                if(OnBoardLimits(actualRow + 1, actualCol - 1) && board[actualRow + 1, actualCol - 1].currentPiece == null) //check bottom right diagonal
+                {
+                    board[actualRow + 1, actualCol - 1].ApplyColorEffect(true);
+                    listCurrentTiles.Add(board[actualRow + 1, actualCol - 1]);
+                }
+
+                if(OnBoardLimits(actualRow + 1, actualCol + 1) && board[actualRow + 1, actualCol + 1].currentPiece == null) //check bottom left diagonal
+                {
+                    board[actualRow + 1, actualCol + 1].ApplyColorEffect(true);
+                    listCurrentTiles.Add(board[actualRow + 1, actualCol - 1]);
+                }
 
             }
         }
@@ -170,6 +198,8 @@ public class Board : MonoSingleton<Board>
         //Add or not tile to listCurrentTiles and aplly color strategy
 
         //Continue or not
+
+        
 
         return true;
     }
