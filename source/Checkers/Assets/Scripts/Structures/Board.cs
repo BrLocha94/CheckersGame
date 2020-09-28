@@ -167,43 +167,14 @@ public class Board : MonoSingleton<Board>
 
             if (target.IsTopMoviment())
             {
-                if (CheckBoardTile(actualRow - 1, actualCol + 1) || CheckBoardTile(actualRow - 1, actualCol + 1))
+                if (CheckBoardTile(actualRow - 1, actualCol + 1) || CheckBoardTile(actualRow - 1, actualCol - 1))
                     currentPiece = target;
-
-                //color effects
-                /*
-                if(OnBoardLimits(actualRow - 1, actualCol + 1) && board[actualRow - 1, actualCol + 1].currentPiece == null) //check top right diagonal
-                {
-                    board[actualRow - 1, actualCol + 1].ApplyColorEffect(true);
-                    listCurrentTiles.Add(board[actualRow - 1, actualCol + 1]);
-                    currentPiece = target;
-                }
-                */
-                
-                if(OnBoardLimits(actualRow - 1, actualCol - 1) && board[actualRow - 1, actualCol - 1].currentPiece == null) //check top left diagonal
-                {
-                    board[actualRow - 1, actualCol - 1].ApplyColorEffect(true);
-                    listCurrentTiles.Add(board[actualRow - 1, actualCol - 1]);
-                    currentPiece = target;
-                }
 
             }
             else
             {
-                //color effects
-                if(OnBoardLimits(actualRow + 1, actualCol - 1) && board[actualRow + 1, actualCol - 1].currentPiece == null) //check bottom right diagonal
-                {
-                    board[actualRow + 1, actualCol - 1].ApplyColorEffect(true);
-                    listCurrentTiles.Add(board[actualRow + 1, actualCol - 1]);
+                if(CheckBoardTile(actualRow + 1, actualCol - 1) || CheckBoardTile(actualRow + 1, actualCol + 1))
                     currentPiece = target;
-                }
-
-                if(OnBoardLimits(actualRow + 1, actualCol + 1) && board[actualRow + 1, actualCol + 1].currentPiece == null) //check bottom left diagonal
-                {
-                    board[actualRow + 1, actualCol + 1].ApplyColorEffect(true);
-                    listCurrentTiles.Add(board[actualRow + 1, actualCol + 1]);
-                    currentPiece = target;
-                }
 
             }
         }
