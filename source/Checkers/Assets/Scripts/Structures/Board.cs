@@ -153,20 +153,6 @@ public class Board : MonoSingleton<Board>
         }    
     }
 
-    public void KingCheckTile(int row, int column, PieceTypes targetType = PieceTypes.Null)
-    {
-        if (OnBoardLimits(row, column) == false) return;
-
-        if(board[row, column].currentPiece == null)
-        {
-            board[row, column].ApplyColorEffect(true);
-            listCurrentTiles.Add(board[row, column ]);
-            KingCheckTile(row + 1, column + 1);
-        }
-
-        return;       
-    }
-
     public void BoardPieceClicked(BoardPiece target)
     {
         if (currentPiece != null) return;
@@ -177,27 +163,38 @@ public class Board : MonoSingleton<Board>
         //Check logic and if can move currentPiece == target
         if (target.IsKing())
         {
-            //color effects
             //checking diagonals
-            KingCheckTile(actualRow + 1, actualCol + 1);
-            
+            bool downRight = CheckKingTile(actualRow + 1, actualCol + 1,  1,  1);
+            bool downLeft  = CheckKingTile(actualRow + 1, actualCol - 1,  1, -1);
+            bool upRight   = CheckKingTile(actualRow - 1, actualCol + 1, -1,  1);
+            bool upLeft    = CheckKingTile(actualRow - 1, actualCol - 1, -1, -1);
+
+            if (downRight || downLeft || upRight || upLeft)
+                currentPiece = target;
         }
         else
         {
-
             if (target.IsTopMoviment())
             {
                 if (CheckBoardTile(actualRow - 1, actualCol + 1) || CheckBoardTile(actualRow - 1, actualCol - 1))
                     currentPiece = target;
-
             }
             else
             {
                 if(CheckBoardTile(actualRow + 1, actualCol - 1) || CheckBoardTile(actualRow + 1, actualCol + 1))
                     currentPiece = target;
-
             }
         }
+    }
+
+    private bool CheckKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType = PieceTypes.Null)
+    {
+        bool check = CheckBoardTile(row, column, targetType);
+
+        if (check == true)
+            CheckKingTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType);
+
+        return check;
     }
 
     private bool CheckBoardTile(int row, int column, PieceTypes targetType = PieceTypes.Null)
@@ -210,6 +207,8 @@ public class Board : MonoSingleton<Board>
             listCurrentTiles.Add(board[row, column ]);
             return true;
         }
+
+        //Check effects when piece != null
 
         return false;
     }
