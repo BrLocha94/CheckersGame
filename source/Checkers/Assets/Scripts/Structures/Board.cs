@@ -112,6 +112,9 @@ public class Board : MonoSingleton<Board>
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
 
+                    if (i == 2)
+                        piece.Promote();
+
                     listBoardPiecesComp.Add(piece);
                 }
             }

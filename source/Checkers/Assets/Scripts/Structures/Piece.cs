@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Piece : SpriteBase
 {
+    [Header("Crown Sprite to activate/deactivate")]
+    [SerializeField]
+    private GameObject crownSprite;
+
     [Header("General colors to use on this board")]
     [SerializeField]
     private Color colorBaseWhite;
@@ -38,16 +42,23 @@ public class Piece : SpriteBase
         if(pieceType == PieceTypes.White)
         {
             pieceType = PieceTypes.WhiteKing;
+            crownSprite.SetActive(true);
             return true;
         }
 
         if(pieceType == PieceTypes.Black)
         {
             pieceType = PieceTypes.BlackKing;
+            crownSprite.SetActive(true);
             return true;
         }
 
         return false;
+    }
+
+    public bool IsWhite()
+    {
+        return (pieceType == PieceTypes.White || pieceType == PieceTypes.WhiteKing);
     }
 
     public bool IsKing()
