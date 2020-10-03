@@ -161,6 +161,35 @@ public class Board : MonoSingleton<Board>
         if (target.IsKing())
         {
             //color effects
+            //checking diagonals
+            while(CheckBoardTile(actualRow - 1, actualCol + 1))
+            {
+                currentPiece = target;
+                actualRow -= 1;
+                actualCol += 1;
+            }
+
+            while(CheckBoardTile(actualRow - 1, actualCol - 1))
+            {
+                currentPiece = target;
+                actualRow -= 1;
+                actualCol -= 1;
+            }
+
+            while(CheckBoardTile(actualRow + 1, actualCol - 1))
+            {
+                currentPiece = target;
+                actualRow += 1;
+                actualCol -= 1;
+            }
+
+            while(CheckBoardTile(actualRow + 1, actualCol + 1))
+            {
+                currentPiece = target;
+                actualRow += 1;
+                actualCol += 1;
+            }
+
         }
         else
         {
