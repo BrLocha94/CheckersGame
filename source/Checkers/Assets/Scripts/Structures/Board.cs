@@ -153,6 +153,20 @@ public class Board : MonoSingleton<Board>
         }    
     }
 
+    public void KingCheckTile(int row, int column, PieceTypes targetType = PieceTypes.Null)
+    {
+        if (OnBoardLimits(row, column) == false) return;
+
+        if(board[row, column].currentPiece == null)
+        {
+            board[row, column].ApplyColorEffect(true);
+            listCurrentTiles.Add(board[row, column ]);
+            KingCheckTile(row + 1, column + 1);
+        }
+
+        return;       
+    }
+
     public void BoardPieceClicked(BoardPiece target)
     {
         if (currentPiece != null) return;
@@ -165,34 +179,8 @@ public class Board : MonoSingleton<Board>
         {
             //color effects
             //checking diagonals
-            while(CheckBoardTile(actualRow - 1, actualCol + 1))
-            {
-                currentPiece = target;
-                actualRow -= 1;
-                actualCol += 1;
-            }
-
-            while(CheckBoardTile(actualRow - 1, actualCol - 1))
-            {
-                currentPiece = target;
-                actualRow -= 1;
-                actualCol -= 1;
-            }
-
-            while(CheckBoardTile(actualRow + 1, actualCol - 1))
-            {
-                currentPiece = target;
-                actualRow += 1;
-                actualCol -= 1;
-            }
-
-            while(CheckBoardTile(actualRow + 1, actualCol + 1))
-            {
-                currentPiece = target;
-                actualRow += 1;
-                actualCol += 1;
-            }
-
+            KingCheckTile(actualRow + 1, actualCol + 1);
+            
         }
         else
         {
