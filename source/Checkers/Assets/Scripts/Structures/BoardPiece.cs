@@ -11,6 +11,11 @@ public class BoardPiece : Piece
         SetInitialConfig(isPlayer, isTop);
     }
 
+    public void Promote()
+    {
+        PromotePiece();
+    }
+
     #region Mouse Click Treatement
 
     bool clicked = false;

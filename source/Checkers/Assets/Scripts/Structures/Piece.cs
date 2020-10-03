@@ -33,6 +33,23 @@ public class Piece : SpriteBase
         return (pieceType == PieceTypes.White) ? colorBaseWhite : colorBaseBlack;
     }
 
+    protected bool PromotePiece()
+    {
+        if(pieceType == PieceTypes.White)
+        {
+            pieceType = PieceTypes.WhiteKing;
+            return true;
+        }
+
+        if(pieceType == PieceTypes.Black)
+        {
+            pieceType = PieceTypes.BlackKing;
+            return true;
+        }
+
+        return false;
+    }
+
     public bool IsKing()
     {
         return (pieceType == PieceTypes.WhiteKing || pieceType == PieceTypes.BlackKing);
