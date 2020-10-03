@@ -209,7 +209,45 @@ public class Board : MonoSingleton<Board>
         }
 
         //Check effects when piece != null
+        if(board[row, column].currentPiece != null)
+        {
+            if(currentPiece.IsWhite)
+            {
+                if(board[row, column].currentPiece.IsWhite)
+                {
+                    return false;
+                }
+                else
+                {
+                    if(currentPiece.IsTopMoviment)
+                    {
+                        
+                    }
+                    else
+                    {
+                        
+                    }
+                }
+            }
+            else
+            {
+                if(board[row, column].currentPiece.IsWhite)
+                {
+                    if(currentPiece.IsTopMoviment)
+                    {
 
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else 
+                {
+                    return false;
+                }
+            }
+        }
         return false;
     }
 
