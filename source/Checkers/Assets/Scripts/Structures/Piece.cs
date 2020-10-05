@@ -56,9 +56,15 @@ public class Piece : SpriteBase
         return false;
     }
 
-    public bool IsWhite()
+    protected bool IsPieceEqual(PieceTypes pieceType)
     {
-        return (pieceType == PieceTypes.White || pieceType == PieceTypes.WhiteKing);
+        if ((pieceType == PieceTypes.White || pieceType == PieceTypes.WhiteKing) &&
+           (this.pieceType == PieceTypes.White || this.pieceType == PieceTypes.WhiteKing)) return true;
+
+        if ((pieceType == PieceTypes.Black || pieceType == PieceTypes.BlackKing) &&
+           (this.pieceType == PieceTypes.Black || this.pieceType == PieceTypes.BlackKing)) return true;
+
+        return false;
     }
 
     public bool IsKing()

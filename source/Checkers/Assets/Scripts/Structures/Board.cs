@@ -112,9 +112,6 @@ public class Board : MonoSingleton<Board>
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
 
-                    if (i == 2)
-                        piece.Promote();
-
                     listBoardPiecesComp.Add(piece);
                 }
             }
@@ -211,42 +208,10 @@ public class Board : MonoSingleton<Board>
         //Check effects when piece != null
         if(board[row, column].currentPiece != null)
         {
-            if(currentPiece.IsWhite)
-            {
-                if(board[row, column].currentPiece.IsWhite)
-                {
-                    return false;
-                }
-                else
-                {
-                    if(currentPiece.IsTopMoviment)
-                    {
-                        
-                    }
-                    else
-                    {
-                        
-                    }
-                }
-            }
-            else
-            {
-                if(board[row, column].currentPiece.IsWhite)
-                {
-                    if(currentPiece.IsTopMoviment)
-                    {
+            if (board[row, column].currentPiece.CheckPieceType(targetType))
+                return false;
 
-                    }
-                    else
-                    {
 
-                    }
-                }
-                else 
-                {
-                    return false;
-                }
-            }
         }
         return false;
     }

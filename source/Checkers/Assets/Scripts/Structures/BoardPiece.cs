@@ -11,8 +11,15 @@ public class BoardPiece : Piece
         SetInitialConfig(isPlayer, isTop);
     }
 
-    public void Promote()
+    public bool CheckPieceType(PieceTypes pieceType)
     {
+        return IsPieceEqual(pieceType);
+    }
+
+    public void CheckPromotion()
+    {
+        if (IsKing()) return;
+
         PromotePiece();
     }
 
