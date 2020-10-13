@@ -161,10 +161,10 @@ public class Board : MonoSingleton<Board>
         if (target.IsKing())
         {
             //checking diagonals
-            bool downRight = CheckKingTile(actualRow + 1, actualCol + 1,  1,  1);
-            bool downLeft  = CheckKingTile(actualRow + 1, actualCol - 1,  1, -1);
-            bool upRight   = CheckKingTile(actualRow - 1, actualCol + 1, -1,  1);
-            bool upLeft    = CheckKingTile(actualRow - 1, actualCol - 1, -1, -1);
+            bool downRight = CheckKingTile(actualRow + 1, actualCol + 1,  1,  1, target.pieceType);
+            bool downLeft  = CheckKingTile(actualRow + 1, actualCol - 1,  1, -1, target.pieceType);
+            bool upRight   = CheckKingTile(actualRow - 1, actualCol + 1, -1,  1, target.pieceType);
+            bool upLeft    = CheckKingTile(actualRow - 1, actualCol - 1, -1, -1, target.pieceType);
 
             if (downRight || downLeft || upRight || upLeft)
                 currentPiece = target;
@@ -173,20 +173,26 @@ public class Board : MonoSingleton<Board>
         {
             if (target.IsTopMoviment())
             {
-                if (CheckBoardTile(actualRow - 1, actualCol + 1) || CheckBoardTile(actualRow - 1, actualCol - 1))
+                Debug.Log("TOP MOVIMENT");
+                bool upRight = CheckBoardTile(actualRow - 1, actualCol + 1, -1, 1, target.pieceType);
+                bool upLeft = CheckBoardTile(actualRow - 1, actualCol - 1, -1, -1, target.pieceType);
+                if (upRight || upLeft)
                     currentPiece = target;
             }
             else
             {
-                if(CheckBoardTile(actualRow + 1, actualCol - 1) || CheckBoardTile(actualRow + 1, actualCol + 1))
+                Debug.Log("Bottom MOVIMENT");
+                bool downRight = CheckBoardTile(actualRow + 1, actualCol + 1, 1, 1, target.pieceType);
+                bool downLeft = CheckBoardTile(actualRow + 1, actualCol - 1, 1, -1, target.pieceType);
+                if (downRight || downLeft)
                     currentPiece = target;
             }
         }
     }
 
-    private bool CheckKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType = PieceTypes.Null)
+    private bool CheckKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
     {
-        bool check = CheckBoardTile(row, column, targetType);
+        bool check = CheckBoardTile(row, column, rowFactor, columnFactor, targetType);
 
         if (check == true)
             CheckKingTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType);
@@ -194,25 +200,34 @@ public class Board : MonoSingleton<Board>
         return check;
     }
 
-    private bool CheckBoardTile(int row, int column, PieceTypes targetType = PieceTypes.Null)
+    private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool recursiveCheck = false)
     {
         if (OnBoardLimits(row, column) == false) return false;
 
+        //if (TileWasNotChecked(board[row, column]) == false) return false;
+
+        Debug.Log("Row " + row + "  Collumn " + column);
+
         if(board[row, column].currentPiece == null)
         {
-            board[row, column].ApplyColorEffect(true);
-            listCurrentTiles.Add(board[row, column ]);
+            if (recursiveCheck == false)
+                board[row, column].ApplyColorEffect(true);
+            else
+                board[row, column].ApplyColorEffect(false);
+
+            listCurrentTiles.Add(board[row, column]);
             return true;
         }
 
         //Check effects when piece != null
-        if(board[row, column].currentPiece != null)
+        if(board[row, column].currentPiece != null && recursiveCheck == false)
         {
             if (board[row, column].currentPiece.CheckPieceType(targetType))
                 return false;
 
-
+            return CheckBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, true);
         }
+
         return false;
     }
 
@@ -222,15 +237,24 @@ public class Board : MonoSingleton<Board>
 
         if (listCurrentTiles.Count <= 0) return;
 
-        //Check target on listCurrentTiles and aplly color strategy
+        if (TileWasNotChecked(target) == true) return;
 
-        for(int i = 0; i < listCurrentTiles.Count; i++)
-        {
-            if(target.Equals(listCurrentTiles[i]))
-            {
-                listCurrentTiles[i].RemoveColorEffect();
-            }
-        }
+        MovePiece(currentPiece, target);
+
+        ClearLastTileEffects();
+    }
+
+    private void MovePiece(BoardPiece currentPiece, BoardTile targetTile)
+    {
+        BoardTile currentTile = currentPiece.currentTile;
+
+        currentTile.currentPiece = null;
+        targetTile.currentPiece = currentPiece;
+
+        currentPiece.currentTile = targetTile;
+        currentPiece.transform.position = targetTile.transform.position;
+
+        //if there is an piece on the way, destroy it
     }
 
     private void ClearLastTileEffects()
@@ -250,6 +274,40 @@ public class Board : MonoSingleton<Board>
 
         if (column < 0 || column >= columns) return false;
 
+        Debug.Log("IS on board limits");
+
         return true;
+    }
+
+    private bool TileWasNotChecked(BoardTile target)
+    {
+        if (target == null) return false;
+
+        if (listCurrentTiles.Count <= 0) return true;
+
+        for(int i = 0; i < listCurrentTiles.Count; i++)
+        {
+            if (listCurrentTiles[i] == target) return false;
+        }
+
+        return true;
+    }
+
+    private int GetRowFactor(int currentRow, int targetRow)
+    {
+        if (currentRow > targetRow) return -1;
+
+        if (currentRow < targetRow) return 1;
+
+        return 0;
+    }
+
+    private int GetColumnFactor(int currentColumn, int targetcolumn)
+    {
+        if (currentColumn > targetcolumn) return -1;
+
+        if (currentColumn < targetcolumn) return 1;
+
+        return 0;
     }
 }
