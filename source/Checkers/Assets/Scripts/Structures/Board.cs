@@ -22,13 +22,12 @@ public class Board : MonoSingleton<Board>
     [SerializeField]
     private GameObject piecesParent;
 
-    private List<BoardPiece> listBoardPiecesPlayer = new List<BoardPiece>();
-    private List<BoardPiece> listBoardPiecesComp = new List<BoardPiece>();
+    private List<BoardPiece> listBoardPieces = new List<BoardPiece>();
 
     private BoardTile[,] board;
 
     BoardPiece currentPiece = null;
-    List<BoardTile> listCurrentTiles = new List<BoardTile>();
+    List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>();
 
     #region Board Creation
 
@@ -112,7 +111,7 @@ public class Board : MonoSingleton<Board>
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
 
-                    listBoardPiecesComp.Add(piece);
+                    listBoardPieces.Add(piece);
                 }
             }
 
@@ -131,7 +130,7 @@ public class Board : MonoSingleton<Board>
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
 
-                    listBoardPiecesPlayer.Add(piece);
+                    listBoardPieces.Add(piece);
                 }
             }
         }
@@ -141,7 +140,7 @@ public class Board : MonoSingleton<Board>
 
     void Update()
     {
-        if(currentPiece != null && listCurrentTiles.Count > 0)
+        if(currentPiece != null && listAvaliableMoves.Count > 0)
         {
             if (Input.GetMouseButton(1))
             {
@@ -173,7 +172,6 @@ public class Board : MonoSingleton<Board>
         {
             if (target.IsTopMoviment())
             {
-                Debug.Log("TOP MOVIMENT");
                 bool upRight = CheckBoardTile(actualRow - 1, actualCol + 1, -1, 1, target.pieceType);
                 bool upLeft = CheckBoardTile(actualRow - 1, actualCol - 1, -1, -1, target.pieceType);
                 if (upRight || upLeft)
@@ -181,7 +179,6 @@ public class Board : MonoSingleton<Board>
             }
             else
             {
-                Debug.Log("Bottom MOVIMENT");
                 bool downRight = CheckBoardTile(actualRow + 1, actualCol + 1, 1, 1, target.pieceType);
                 bool downLeft = CheckBoardTile(actualRow + 1, actualCol - 1, 1, -1, target.pieceType);
                 if (downRight || downLeft)
@@ -200,13 +197,11 @@ public class Board : MonoSingleton<Board>
         return check;
     }
 
-    private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool recursiveCheck = false)
+    private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, BoardPiece lastPiece = null, bool recursiveCheck = false)
     {
         if (OnBoardLimits(row, column) == false) return false;
 
-        //if (TileWasNotChecked(board[row, column]) == false) return false;
-
-        Debug.Log("Row " + row + "  Collumn " + column);
+        //Debug.Log("Row " + row + "  Collumn " + column);
 
         if(board[row, column].currentPiece == null)
         {
@@ -215,17 +210,21 @@ public class Board : MonoSingleton<Board>
             else
                 board[row, column].ApplyColorEffect(false);
 
-            listCurrentTiles.Add(board[row, column]);
+            BoardInfoHolder newInfo = new BoardInfoHolder();
+            newInfo.piece = lastPiece;
+            newInfo.tile = board[row, column];
+
+            listAvaliableMoves.Add(newInfo);
             return true;
         }
 
         //Check effects when piece != null
-        if(board[row, column].currentPiece != null && recursiveCheck == false)
+        if(board[row, column].currentPiece != null && recursiveCheck == false && lastPiece == null)
         {
             if (board[row, column].currentPiece.CheckPieceType(targetType))
                 return false;
 
-            return CheckBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, true);
+            return CheckBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, board[row, column].currentPiece, true);
         }
 
         return false;
@@ -235,13 +234,22 @@ public class Board : MonoSingleton<Board>
     {
         if (currentPiece == null) return;
 
-        if (listCurrentTiles.Count <= 0) return;
+        if (listAvaliableMoves.Count <= 0) return;
 
         if (TileWasNotChecked(target) == true) return;
+
+        BoardPiece removedPiece = GetRemovedPiece(target);
 
         MovePiece(currentPiece, target);
 
         ClearLastTileEffects();
+
+        if(removedPiece != null)
+        {
+            listBoardPieces.Remove(removedPiece);
+            Destroy(removedPiece.gameObject);
+            //Check if game is over
+        }
     }
 
     private void MovePiece(BoardPiece currentPiece, BoardTile targetTile)
@@ -253,16 +261,14 @@ public class Board : MonoSingleton<Board>
 
         currentPiece.currentTile = targetTile;
         currentPiece.transform.position = targetTile.transform.position;
-
-        //if there is an piece on the way, destroy it
     }
 
     private void ClearLastTileEffects()
     {
-        for (int i = listCurrentTiles.Count - 1; i >= 0; i--)
+        for (int i = listAvaliableMoves.Count - 1; i >= 0; i--)
         {
-            listCurrentTiles[i].RemoveColorEffect();
-            listCurrentTiles.RemoveAt(i);
+            listAvaliableMoves[i].tile.RemoveColorEffect();
+            listAvaliableMoves.RemoveAt(i);
         }
 
         currentPiece = null;
@@ -274,8 +280,6 @@ public class Board : MonoSingleton<Board>
 
         if (column < 0 || column >= columns) return false;
 
-        Debug.Log("IS on board limits");
-
         return true;
     }
 
@@ -283,30 +287,36 @@ public class Board : MonoSingleton<Board>
     {
         if (target == null) return false;
 
-        if (listCurrentTiles.Count <= 0) return true;
+        if (listAvaliableMoves.Count <= 0) return true;
 
-        for(int i = 0; i < listCurrentTiles.Count; i++)
+        for(int i = 0; i < listAvaliableMoves.Count; i++)
         {
-            if (listCurrentTiles[i] == target) return false;
+            if (listAvaliableMoves[i].tile == target) return false;
         }
 
         return true;
     }
 
-    private int GetRowFactor(int currentRow, int targetRow)
+    private BoardPiece GetRemovedPiece(BoardTile target)
     {
-        if (currentRow > targetRow) return -1;
+        if (target == null) return null;
 
-        if (currentRow < targetRow) return 1;
+        if (listAvaliableMoves.Count <= 0) return null;
 
-        return 0;
+        for (int i = 0; i < listAvaliableMoves.Count; i++)
+        {
+            if (listAvaliableMoves[i].tile == target)
+                return listAvaliableMoves[i].piece;
+        }
+
+        return null;
     }
 
-    private int GetColumnFactor(int currentColumn, int targetcolumn)
+    private int GetFactor(int current, int target)
     {
-        if (currentColumn > targetcolumn) return -1;
+        if (current > target) return -1;
 
-        if (currentColumn < targetcolumn) return 1;
+        if (current < target) return 1;
 
         return 0;
     }
