@@ -16,11 +16,12 @@ public class BoardPiece : Piece
         return IsPieceEqual(pieceType);
     }
 
-    public void CheckPromotion()
+    public void CheckPromotion(int boardSize)
     {
         if (IsKing()) return;
 
-        PromotePiece();
+        if(IsTopMoviment() && currentTile.row == 0 || !IsTopMoviment() && currentTile.row == boardSize - 1)
+            PromotePiece();
     }
 
     #region Mouse Click Treatement

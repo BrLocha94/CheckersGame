@@ -189,42 +189,46 @@ public class Board : MonoSingleton<Board>
 
     private bool CheckKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
     {
-        bool check = CheckBoardTile(row, column, rowFactor, columnFactor, targetType);
+        bool check = CheckBoardTile(row, column, rowFactor, columnFactor, targetType, true);
 
-        if (check == true)
-            CheckKingTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType);
+        //if (check == true)
+        //    CheckKingTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType);
+
+        Debug.Log(check);
 
         return check;
     }
 
-    private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, BoardPiece lastPiece = null, bool recursiveCheck = false)
+    private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
     {
         if (OnBoardLimits(row, column) == false) return false;
 
-        //Debug.Log("Row " + row + "  Collumn " + column);
-
         if(board[row, column].currentPiece == null)
         {
-            if (recursiveCheck == false)
-                board[row, column].ApplyColorEffect(true);
-            else
+            if(lastPiece != null)
                 board[row, column].ApplyColorEffect(false);
+            else
+                board[row, column].ApplyColorEffect(true);
 
             BoardInfoHolder newInfo = new BoardInfoHolder();
             newInfo.piece = lastPiece;
             newInfo.tile = board[row, column];
 
             listAvaliableMoves.Add(newInfo);
+
+            if(isKing == true)
+                CheckBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
+
             return true;
         }
 
         //Check effects when piece != null
-        if(board[row, column].currentPiece != null && recursiveCheck == false && lastPiece == null)
+        if(board[row, column].currentPiece != null && lastPiece == null)
         {
             if (board[row, column].currentPiece.CheckPieceType(targetType))
                 return false;
 
-            return CheckBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, board[row, column].currentPiece, true);
+            return CheckBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, board[row, column].currentPiece);
         }
 
         return false;
@@ -261,6 +265,8 @@ public class Board : MonoSingleton<Board>
 
         currentPiece.currentTile = targetTile;
         currentPiece.transform.position = targetTile.transform.position;
+
+        currentPiece.CheckPromotion(rows);
     }
 
     private void ClearLastTileEffects()
