@@ -7,8 +7,8 @@ public class AI : MonoBehaviour
 {
     BoardTile[,] board;
     List<BoardPiece> pieces;
-    List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //movimentos possiveis de uma peca
-    Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //consulta de movimentos
+    List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
+    Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
 
     void AIBoardPiece(BoardPiece target)
     {
