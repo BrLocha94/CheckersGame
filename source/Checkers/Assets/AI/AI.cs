@@ -19,9 +19,9 @@ public class AI : MonoBehaviour
     {
         board = null;
         pieces.Clear();
-        //percorrer a matriz
+        //initiate game board
         board = Board.instance.GetBoard();
-        //verificar as pecas pretas
+        //checking dark pieces
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int j = 0; j < board.GetLength(1); j++)
@@ -35,7 +35,7 @@ public class AI : MonoBehaviour
                 }
             }
         }
-        //listar os movimentos possiveis das pecas
+        //list possible piece moves
         for (int i = 0; i < pieces.Count; i++)
         {
 
