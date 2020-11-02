@@ -326,4 +326,9 @@ public class Board : MonoSingleton<Board>
 
         return 0;
     }
+
+    public BoardTile[,] GetBoard()
+    {
+        return board;
+    }
 }
