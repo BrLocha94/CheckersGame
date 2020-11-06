@@ -120,6 +120,11 @@ public class Board : MonoSingleton<Board>
 
     private void SpawPieces()
     {
+        StartCoroutine(SpawPiecesRoutine());
+    }
+
+    IEnumerator SpawPiecesRoutine()
+    {
         if (board != null)
         {
             //Initialize pieces on TOP
@@ -140,6 +145,8 @@ public class Board : MonoSingleton<Board>
                     listBoardPieces.Add(piece);
                 }
             }
+
+            yield return new WaitForSeconds(0.5f);
 
             //Initialize pieces on DOWN
             for (int i = rows - 1; i > rows - 4; i--)
@@ -162,6 +169,8 @@ public class Board : MonoSingleton<Board>
 
             currentPieceType = PieceTypes.White;
         }
+
+        yield return null;
     }
 
     #endregion

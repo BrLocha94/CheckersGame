@@ -10,7 +10,7 @@ public class GameController : MonoSingleton<GameController>
 
     [Header("Time variables to initialize routine")]
     [SerializeField]
-    [Range(0.1f, 1f)]
+    [Range(0.1f, 2f)]
     private float timeToSpawPieces = 0.1f;
     [SerializeField]
     [Range(0.1f, 2f)]
@@ -31,11 +31,11 @@ public class GameController : MonoSingleton<GameController>
 
     IEnumerator InitializeGameRoutine()
     {
-        yield return new WaitForSeconds(timeToSpawPieces);
+        yield return new WaitForSeconds(timeToInitialize);
 
         ChangeGameState(GameStates.SpawningPieces);
 
-        yield return new WaitForSeconds(timeToInitialize);
+        yield return new WaitForSeconds(timeToSpawPieces);
 
         ChangeGameState(GameStates.Running);
     }

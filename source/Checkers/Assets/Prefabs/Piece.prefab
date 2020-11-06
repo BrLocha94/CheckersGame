@@ -175,9 +175,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   crownSprite: {fileID: 6678255924325548690}
-  colorBaseWhite: {r: 0.8235294, g: 0.1843137, b: 0.7794182, a: 1}
-  colorBaseBlack: {r: 0.15641688, g: 0.30422112, b: 0.8962264, a: 1}
-  timeAnimation: 0.5
+  colorBaseWhite: {r: 1, g: 1, b: 1, a: 1}
+  colorBaseBlack: {r: 1, g: 0.06132078, b: 0.06132078, a: 1}
+  timeAnimationMinimum: 0.5
+  timeAnimationMaximum: 1
 --- !u!50 &7262705511381235200
 Rigidbody2D:
   serializedVersion: 4

@@ -21,12 +21,12 @@ public class Piece : SpriteBase
     {
         if (isTop == true)
         {
-            pieceType = PieceTypes.White;
+            pieceType = PieceTypes.Black;
             pieceInitialDirection = PieceInitialDirection.Top;
         }
         else
         {
-            pieceType = PieceTypes.Black;
+            pieceType = PieceTypes.White;
             pieceInitialDirection = PieceInitialDirection.Bottom;
         }
 

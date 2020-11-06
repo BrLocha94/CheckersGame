@@ -5,8 +5,9 @@
 public class BoardPiece : Piece
 {
     [SerializeField]
-    [Range(0.1f, 1f)]
-    private float timeAnimation = 0.1f;
+    private float timeAnimationMinimum = 0.15f;
+    [SerializeField]
+    private float timeAnimationMaximum = 0.5f;
 
     public BoardTile currentTile { get; set; }
 
@@ -66,6 +67,8 @@ public class BoardPiece : Piece
     protected override void InitializeOnAwake()
     {
         base.InitializeOnAwake();
+
+        float timeAnimation = Random.Range(timeAnimationMinimum, timeAnimationMaximum);
 
         iTween.ScaleTo(gameObject, iTween.Hash(
             "time", timeAnimation,
