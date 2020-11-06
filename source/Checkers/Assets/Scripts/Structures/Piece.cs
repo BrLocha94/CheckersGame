@@ -17,17 +17,18 @@ public class Piece : SpriteBase
     public PieceTypes pieceType { get; private set; }
     public PieceInitialDirection pieceInitialDirection { get; private set; }
 
-    protected void SetInitialConfig(bool isPlayer, bool isTop)
+    protected void SetInitialConfig(bool isOnBoardTop)
     {
-        if (isPlayer == true)
-            pieceType = PieceTypes.White;
-        else
+        if (isOnBoardTop == true)
+        {
             pieceType = PieceTypes.Black;
-
-        if (isTop == true)
-            pieceInitialDirection = PieceInitialDirection.Top;
+            pieceInitialDirection = PieceInitialDirection.Down;
+        }
         else
-            pieceInitialDirection = PieceInitialDirection.Bottom;
+        {
+            pieceType = PieceTypes.White;
+            pieceInitialDirection = PieceInitialDirection.Up;
+        }
 
         spriteRenderer.color = GetBaseColor();
     }
@@ -72,9 +73,9 @@ public class Piece : SpriteBase
         return (pieceType == PieceTypes.WhiteKing || pieceType == PieceTypes.BlackKing);
     }
 
-    public bool IsTopMoviment()
+    public bool IsDownMoviment()
     {
-        return pieceInitialDirection == PieceInitialDirection.Top;
+        return pieceInitialDirection == PieceInitialDirection.Down;
     }
 }
 
@@ -90,6 +91,6 @@ public enum PieceTypes
 public enum PieceInitialDirection
 {
     Null,
-    Bottom,
-    Top
+    Up,
+    Down
 }

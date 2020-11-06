@@ -4,11 +4,16 @@
 [RequireComponent(typeof(Collider2D))]
 public class BoardPiece : Piece
 {
+    [SerializeField]
+    private float timeAnimationMinimum = 0.15f;
+    [SerializeField]
+    private float timeAnimationMaximum = 0.5f;
+
     public BoardTile currentTile { get; set; }
 
-    public void InitializeBoardPiece(bool isPlayer, bool isTop)
+    public void InitializeBoardPiece(bool isOnBoardTop)
     {
-        SetInitialConfig(isPlayer, isTop);
+        SetInitialConfig(isOnBoardTop);
     }
 
     public bool CheckPieceType(PieceTypes pieceType)
@@ -20,7 +25,7 @@ public class BoardPiece : Piece
     {
         if (IsKing()) return;
 
-        if(IsTopMoviment() && currentTile.row == 0 || !IsTopMoviment() && currentTile.row == boardSize - 1)
+        if(IsDownMoviment() && currentTile.row == 0 || !IsDownMoviment() && currentTile.row == boardSize - 1)
             PromotePiece();
     }
 
@@ -30,7 +35,8 @@ public class BoardPiece : Piece
 
     void OnMouseDown()
     {
-        clicked = true;
+        if(IsPieceEqual(Board.instance.currentPieceType))
+            clicked = true;
     }
 
     void OnMouseUp()
@@ -49,11 +55,24 @@ public class BoardPiece : Piece
 
     void OnClick()
     {
-        if(Board.instance != null)
-        {
-            Board.instance.BoardPieceClicked(this);
-        }
+        if (Board.instance == null) return;
+
+        if (Board.instance.CanCheckMoves() == false) return;
+
+        Board.instance.BoardPieceClicked(this);
     }
 
     #endregion
+
+    protected override void InitializeOnAwake()
+    {
+        base.InitializeOnAwake();
+
+        float timeAnimation = Random.Range(timeAnimationMinimum, timeAnimationMaximum);
+
+        iTween.ScaleTo(gameObject, iTween.Hash(
+            "time", timeAnimation,
+            "scale", Vector3.one,
+            "easetype", iTween.EaseType.easeInOutElastic));
+    }
 }
