@@ -4,6 +4,10 @@
 [RequireComponent(typeof(Collider2D))]
 public class BoardPiece : Piece
 {
+    [SerializeField]
+    [Range(0.1f, 1f)]
+    private float timeAnimation = 0.1f;
+
     public BoardTile currentTile { get; set; }
 
     public void InitializeBoardPiece(bool isTop)
@@ -58,4 +62,14 @@ public class BoardPiece : Piece
     }
 
     #endregion
+
+    protected override void InitializeOnAwake()
+    {
+        base.InitializeOnAwake();
+
+        iTween.ScaleTo(gameObject, iTween.Hash(
+            "time", timeAnimation,
+            "scale", Vector3.one,
+            "easetype", iTween.EaseType.easeInOutElastic));
+    }
 }

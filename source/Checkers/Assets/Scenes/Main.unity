@@ -143,7 +143,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeToSpawPieces: 0.5
   timeToInitialize: 0.5
-  againstAI: 0
 --- !u!4 &306714201
 Transform:
   m_ObjectHideFlags: 0
