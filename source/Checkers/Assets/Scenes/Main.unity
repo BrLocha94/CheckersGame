@@ -438,6 +438,8 @@ MonoBehaviour:
   columns: 8
   tilePrefab: {fileID: 114188616979017936, guid: a3f470220d1c2bc4fbe2e12a86f15ced,
     type: 3}
+  framePrefab: {fileID: 7826138388092674743, guid: 5c4001ebab15f1448bdbb882f0de21e8,
+    type: 3}
   tilesParent: {fileID: 1094357908}
   piecePrefab: {fileID: 1857226943499079306, guid: c350c53a394ec8e4c9bb29ac47a42720,
     type: 3}

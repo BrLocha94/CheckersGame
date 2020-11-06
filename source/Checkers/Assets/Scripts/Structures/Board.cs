@@ -6,13 +6,17 @@ public class Board : MonoSingleton<Board>
 {
     [Header("Board basic dimensions")]
     [SerializeField]
+    [Range(4, 20)]
     private int rows = 8;
     [SerializeField]
+    [Range(4, 20)]
     private int columns = 8;
 
     [Header("Tile prefab used instantiate board")]
     [SerializeField]
     private BoardTile tilePrefab;
+    [SerializeField]
+    private SpriteRenderer framePrefab;
     [SerializeField]
     private GameObject tilesParent;
 
@@ -82,6 +86,20 @@ public class Board : MonoSingleton<Board>
     {
         board = new BoardTile[rows, columns];
 
+        //Create frame
+        if (framePrefab != null)
+        {   
+            SpriteRenderer frame = Instantiate(framePrefab, 
+                                            new Vector3(transform.position.x,
+                                                        transform.position.y,
+                                                        0f),
+                                            framePrefab.transform.rotation);
+
+            frame.transform.SetParent(tilesParent.transform);
+
+            frame.transform.localScale = new Vector2(columns + 0.3f, rows + 0.3f);
+        }
+
         for (int i = 0; i < rows; i++)
         {
             for(int j = 0; j < columns; j++)
@@ -129,7 +147,7 @@ public class Board : MonoSingleton<Board>
         {
             //Initialize pieces on TOP
             //Com Pieces
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < (rows/2 - 1); i++)
             {
                 for (int j = 0; j < columns; j++)
                 {
@@ -151,7 +169,7 @@ public class Board : MonoSingleton<Board>
 
             //Initialize pieces on DOWN
             //Player pieces
-            for (int i = rows - 1; i > rows - 4; i--)
+            for (int i = rows - 1; i > rows/2; i--)
             {
                 for (int j = 0; j < columns; j++)
                 {
