@@ -6,9 +6,9 @@ public class BoardPiece : Piece
 {
     public BoardTile currentTile { get; set; }
 
-    public void InitializeBoardPiece(bool isPlayer, bool isTop)
+    public void InitializeBoardPiece(bool isTop)
     {
-        SetInitialConfig(isPlayer, isTop);
+        SetInitialConfig(isTop);
     }
 
     public bool CheckPieceType(PieceTypes pieceType)
@@ -30,7 +30,8 @@ public class BoardPiece : Piece
 
     void OnMouseDown()
     {
-        clicked = true;
+        if(IsPieceEqual(Board.instance.currentPieceType))
+            clicked = true;
     }
 
     void OnMouseUp()
@@ -49,10 +50,11 @@ public class BoardPiece : Piece
 
     void OnClick()
     {
-        if(Board.instance != null)
-        {
-            Board.instance.BoardPieceClicked(this);
-        }
+        if (Board.instance == null) return;
+
+        if (Board.instance.CanCheckMoves() == false) return;
+
+        Board.instance.BoardPieceClicked(this);
     }
 
     #endregion

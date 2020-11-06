@@ -29,9 +29,36 @@ public class Board : MonoSingleton<Board>
     BoardPiece currentPiece = null;
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>();
 
+    #region Delegates Region
+
+    public PieceTypes currentPieceType { get; private set; }
+    public GameStates currentGameState { get; private set; }
+
+    void OnGameStateChange(GameStates newGameState)
+    {
+        currentGameState = newGameState;
+
+        if (newGameState == GameStates.Initializing)
+            InitializeBoard();
+        else if (newGameState == GameStates.SpawningPieces)
+            SpawPieces();
+    }
+
+    private void OnEnable()
+    {
+        GameController.onGameStateChange += OnGameStateChange;
+    }
+
+    private void OnDisable()
+    {
+        GameController.onGameStateChange -= OnGameStateChange;
+    }
+
+    #endregion
+
     #region Board Creation
 
-    void Start()
+    private void InitializeBoard()
     {
         if (tilePrefab != null)
         {
@@ -43,7 +70,6 @@ public class Board : MonoSingleton<Board>
                 Vector2 baseSpaw = SetBaseSpaw(transform.position, offset);
 
                 CreateBoard(offset, baseSpaw);
-                SpawPieces();
             }
             else
                 Debug.Log("Class Board, method Start: Cant acess tile prefab sprite");
@@ -106,7 +132,7 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.InitializeBoardPiece(false, false);
+                    piece.InitializeBoardPiece(false);
 
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
@@ -125,7 +151,7 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.InitializeBoardPiece(true, true);
+                    piece.InitializeBoardPiece(true);
 
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
@@ -133,6 +159,8 @@ public class Board : MonoSingleton<Board>
                     listBoardPieces.Add(piece);
                 }
             }
+
+            currentPieceType = PieceTypes.White;
         }
     }
 
@@ -156,10 +184,8 @@ public class Board : MonoSingleton<Board>
         int actualRow = target.currentTile.row;
         int actualCol = target.currentTile.column;
 
-        //Check logic and if can move currentPiece == target
         if (target.IsKing())
         {
-            //checking diagonals
             bool downRight = CheckKingTile(actualRow + 1, actualCol + 1,  1,  1, target.pieceType);
             bool downLeft  = CheckKingTile(actualRow + 1, actualCol - 1,  1, -1, target.pieceType);
             bool upRight   = CheckKingTile(actualRow - 1, actualCol + 1, -1,  1, target.pieceType);
@@ -189,14 +215,7 @@ public class Board : MonoSingleton<Board>
 
     private bool CheckKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
     {
-        bool check = CheckBoardTile(row, column, rowFactor, columnFactor, targetType, true);
-
-        //if (check == true)
-        //    CheckKingTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType);
-
-        Debug.Log(check);
-
-        return check;
+        return CheckBoardTile(row, column, rowFactor, columnFactor, targetType, true);
     }
 
     private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
@@ -325,5 +344,10 @@ public class Board : MonoSingleton<Board>
         if (current < target) return 1;
 
         return 0;
+    }
+
+    public bool CanCheckMoves()
+    {
+        return currentGameState == GameStates.Running ? true : false;
     }
 }

@@ -17,17 +17,18 @@ public class Piece : SpriteBase
     public PieceTypes pieceType { get; private set; }
     public PieceInitialDirection pieceInitialDirection { get; private set; }
 
-    protected void SetInitialConfig(bool isPlayer, bool isTop)
+    protected void SetInitialConfig(bool isTop)
     {
-        if (isPlayer == true)
-            pieceType = PieceTypes.White;
-        else
-            pieceType = PieceTypes.Black;
-
         if (isTop == true)
+        {
+            pieceType = PieceTypes.White;
             pieceInitialDirection = PieceInitialDirection.Top;
+        }
         else
+        {
+            pieceType = PieceTypes.Black;
             pieceInitialDirection = PieceInitialDirection.Bottom;
+        }
 
         spriteRenderer.color = GetBaseColor();
     }
