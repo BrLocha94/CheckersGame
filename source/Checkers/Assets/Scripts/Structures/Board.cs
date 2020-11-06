@@ -128,6 +128,7 @@ public class Board : MonoSingleton<Board>
         if (board != null)
         {
             //Initialize pieces on TOP
+            //Com Pieces
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < columns; j++)
@@ -149,6 +150,7 @@ public class Board : MonoSingleton<Board>
             yield return new WaitForSeconds(0.5f);
 
             //Initialize pieces on DOWN
+            //Player pieces
             for (int i = rows - 1; i > rows - 4; i--)
             {
                 for (int j = 0; j < columns; j++)
@@ -205,7 +207,7 @@ public class Board : MonoSingleton<Board>
         }
         else
         {
-            if (target.IsTopMoviment())
+            if (target.IsDownMoviment())
             {
                 bool upRight = CheckBoardTile(actualRow - 1, actualCol + 1, -1, 1, target.pieceType);
                 bool upLeft = CheckBoardTile(actualRow - 1, actualCol - 1, -1, -1, target.pieceType);
@@ -276,12 +278,44 @@ public class Board : MonoSingleton<Board>
 
         ClearLastTileEffects();
 
-        if(removedPiece != null)
+        if (removedPiece != null)
         {
             listBoardPieces.Remove(removedPiece);
             Destroy(removedPiece.gameObject);
+
             //Check if game is over
+            if (CheckGameOver() == true)
+            {
+                if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+                    GameController.instance.ChangeGameState(GameStates.GameClear);
+                else
+                    GameController.instance.ChangeGameState(GameStates.GameOver);
+            }
+            else
+                
+            //else next turn
+            NextTurn();
         }
+        else
+            NextTurn();
+    }
+
+    private bool CheckGameOver()
+    {
+        bool white = false;
+        bool black = false;
+
+        for(int i = 0; i < listBoardPieces.Count; i++)
+        {
+            if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+                white = true;
+            else if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+                black = true;
+
+            if (white && black) return false;
+        }
+
+        return true;
     }
 
     private void MovePiece(BoardPiece currentPiece, BoardTile targetTile)
@@ -353,6 +387,14 @@ public class Board : MonoSingleton<Board>
         if (current < target) return 1;
 
         return 0;
+    }
+
+    private void NextTurn()
+    {
+        if (currentPieceType == PieceTypes.White)
+            currentPieceType = PieceTypes.Black;
+        else if (currentPieceType == PieceTypes.Black)
+            currentPieceType = PieceTypes.White;
     }
 
     public bool CanCheckMoves()

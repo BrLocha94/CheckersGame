@@ -11,9 +11,9 @@ public class BoardPiece : Piece
 
     public BoardTile currentTile { get; set; }
 
-    public void InitializeBoardPiece(bool isTop)
+    public void InitializeBoardPiece(bool isOnBoardTop)
     {
-        SetInitialConfig(isTop);
+        SetInitialConfig(isOnBoardTop);
     }
 
     public bool CheckPieceType(PieceTypes pieceType)
@@ -25,7 +25,7 @@ public class BoardPiece : Piece
     {
         if (IsKing()) return;
 
-        if(IsTopMoviment() && currentTile.row == 0 || !IsTopMoviment() && currentTile.row == boardSize - 1)
+        if(IsDownMoviment() && currentTile.row == 0 || !IsDownMoviment() && currentTile.row == boardSize - 1)
             PromotePiece();
     }
 
