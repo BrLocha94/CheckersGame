@@ -6,7 +6,9 @@ public delegate void OnGameStateChange(GameStates newState);
 
 public class GameController : MonoSingleton<GameController>
 {
-    public static event OnGameStateChange onGameStateChange; 
+    public static event OnGameStateChange onGameStateChange;
+
+    bool againstAI = false;
 
     GameStates currentGameState = GameStates.Null;
 
