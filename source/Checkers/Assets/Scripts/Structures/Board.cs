@@ -307,9 +307,9 @@ public class Board : MonoSingleton<Board>
 
         for(int i = 0; i < listBoardPieces.Count; i++)
         {
-            if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+            if (listBoardPieces[i].CheckPieceType(PieceTypes.White))
                 white = true;
-            else if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+            else if (listBoardPieces[i].CheckPieceType(PieceTypes.Black))
                 black = true;
 
             if (white && black) return false;
