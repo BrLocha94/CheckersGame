@@ -16,7 +16,7 @@ public class GameController : MonoSingleton<GameController>
     [Range(0.1f, 2f)]
     private float timeToIntro = 0.1f;
     
-    public bool againstAI { get; private set; }
+    public bool againstAI { get; set; }
 
     GameStates currentGameState = GameStates.Null;
 

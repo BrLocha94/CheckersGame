@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class WindowIntro : Window
 {
+    public void ChooseGameMode(bool againstIA)
+    {
+        GameController.instance.againstAI = againstIA;
+
+        TurnOff();
+    }
+
     public override void TurnOff()
     {
         base.TurnOff();
