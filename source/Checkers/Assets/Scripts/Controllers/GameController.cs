@@ -14,7 +14,7 @@ public class GameController : MonoSingleton<GameController>
     private float timeToSpawPieces = 0.1f;
     [SerializeField]
     [Range(0.1f, 2f)]
-    private float timeToInitialize = 0.1f;
+    private float timeToIntro = 0.1f;
     
     public bool againstAI { get; private set; }
 
@@ -26,18 +26,14 @@ public class GameController : MonoSingleton<GameController>
 
         ChangeGameState(GameStates.Initializing);
 
-        StartCoroutine(InitializeGameRoutine());
+        StartCoroutine(ChangeStateRoutine(timeToIntro, GameStates.Intro));
     }
 
-    IEnumerator InitializeGameRoutine()
+    IEnumerator ChangeStateRoutine(float time, GameStates nextState)
     {
-        yield return new WaitForSeconds(timeToInitialize);
+        yield return new WaitForSeconds(time);
 
-        ChangeGameState(GameStates.SpawningPieces);
-
-        yield return new WaitForSeconds(timeToSpawPieces);
-
-        ChangeGameState(GameStates.Running);
+        ChangeGameState(nextState);
     }
 
     public GameStates GetGameState()
@@ -49,6 +45,9 @@ public class GameController : MonoSingleton<GameController>
     {
         currentGameState = newState;
 
+        if (currentGameState == GameStates.SpawningPieces)
+            StartCoroutine(ChangeStateRoutine(timeToSpawPieces, GameStates.Running));
+
         onGameStateChange?.Invoke(newState);
     }
 }
@@ -57,9 +56,13 @@ public enum GameStates
 {
     Null,
     Initializing,
+    Intro,
     SpawningPieces,
     Running,
     Paused,
+    Tutorial,
+    Confirm,
     GameClear,
-    GameOver
+    GameOver,
+    Draw
 }

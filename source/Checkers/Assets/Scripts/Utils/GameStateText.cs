@@ -15,7 +15,11 @@ public class GameStateText : MonoBehaviour
 
     void OnGameStateChange(GameStates newGameState)
     {
+        #if UNITY_EDITOR
+
         textUi.text = newGameState.ToString();
+        
+        #endif
     }
 
     private void OnEnable()
