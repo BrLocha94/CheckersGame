@@ -33,10 +33,6 @@ public class BoardPiece : Piece
 
     public void MoveTo(Vector3 target)
     {
-        Debug.Log(gameObject);
-        Debug.Log(target);
-
-
         iTween.MoveTo(gameObject, iTween.Hash(
             "time", timeMoviment,
             "position", target,
