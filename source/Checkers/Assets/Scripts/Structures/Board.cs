@@ -12,19 +12,23 @@ public class Board : MonoSingleton<Board>
     [Range(4, 20)]
     private int columns = 8;
 
+    [Space]
+
     [Header("Tile prefab used instantiate board")]
     [SerializeField]
-    private BoardTile tilePrefab;
+    private BoardTile tilePrefab = null;
     [SerializeField]
-    private SpriteRenderer framePrefab;
+    private SpriteRenderer framePrefab = null;
     [SerializeField]
-    private GameObject tilesParent;
+    private GameObject tilesParent = null;
+
+    [Space]
 
     [Header("Pieces prefab to instantiate")]
     [SerializeField]
-    private BoardPiece piecePrefab;
+    private BoardPiece piecePrefab = null;
     [SerializeField]
-    private GameObject piecesParent;
+    private GameObject piecesParent = null;
 
     private List<BoardPiece> listBoardPieces = new List<BoardPiece>();
 
@@ -138,7 +142,20 @@ public class Board : MonoSingleton<Board>
 
     private void SpawPieces()
     {
+        ClearPiecesList();
         StartCoroutine(SpawPiecesRoutine());
+    }
+
+    private void ClearPiecesList()
+    {
+        if (listBoardPieces.Count == 0) return;
+
+        for(int i = listBoardPieces.Count - 1; i >= 0; i++)
+        {
+            BoardPiece piece = listBoardPieces[i];
+            listBoardPieces.RemoveAt(i);
+            Destroy(piece.gameObject);
+        }
     }
 
     IEnumerator SpawPiecesRoutine()
@@ -188,6 +205,7 @@ public class Board : MonoSingleton<Board>
             }
 
             currentPieceType = PieceTypes.White;
+            VisualController.instance.UpdateCurrentPlayer(currentPieceType);
         }
 
         yield return null;
@@ -344,7 +362,9 @@ public class Board : MonoSingleton<Board>
         targetTile.currentPiece = currentPiece;
 
         currentPiece.currentTile = targetTile;
-        currentPiece.transform.position = targetTile.transform.position;
+
+        currentPiece.MoveTo(targetTile.transform.position);
+        //currentPiece.transform.position = targetTile.transform.position;
 
         currentPiece.CheckPromotion(rows);
     }
@@ -413,6 +433,8 @@ public class Board : MonoSingleton<Board>
             currentPieceType = PieceTypes.Black;
         else if (currentPieceType == PieceTypes.Black)
             currentPieceType = PieceTypes.White;
+
+        VisualController.instance.UpdateCurrentPlayer(currentPieceType);
     }
 
     public bool CanCheckMoves()

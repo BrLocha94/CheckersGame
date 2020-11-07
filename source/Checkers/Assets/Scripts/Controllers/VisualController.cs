@@ -7,27 +7,31 @@ public class VisualController : MonoSingleton<VisualController>
 {
     [Header("General Buttons references")]
     [SerializeField]
-    private Button buttonPauseOver;
+    private Button buttonPauseOver = null;
+
+    [Space]
 
     [Header("General Ui texts")]
     [SerializeField]
-    private Text textTime;
+    private Text textTime = null;
     [SerializeField]
-    private Text textCurrentPlayer;
+    private Text textCurrentPlayer = null;
 
     [Space]
 
     [Header("General windows used on this script")]
     [SerializeField]
-    private Window windowFume;
+    private Window windowFume = null;
     [SerializeField]
-    private Window windowIntro;
+    private Window windowIntro = null;
     [SerializeField]
-    private Window windowTutorial;
+    private Window windowTutorial = null;
     [SerializeField]
-    private Window windowConfirm;
+    private Window windowConfirm = null;
     [SerializeField]
-    private Window windowGameOver;
+    private Window windowGameOver= null;
+
+    float time = 0f;
 
     public GameStates currentGameState { get; private set; }
 
@@ -47,6 +51,32 @@ public class VisualController : MonoSingleton<VisualController>
     private void OnDisable()
     {
         GameController.onGameStateChange -= OnGameStateChange;
+    }
+
+    void Update()
+    {
+        if(currentGameState == GameStates.Running)
+        {
+            time += Time.deltaTime;
+
+            textTime.text = UpdateRaceTime(time);
+        }
+    }
+
+    public string UpdateRaceTime(float currentTime)
+    {
+        int curMin = Mathf.FloorToInt(currentTime / 60f);
+        int curSec = Mathf.FloorToInt(currentTime - curMin * 60);
+        int curCent = Mathf.FloorToInt((currentTime * 100) % 100);
+
+        string curTime = string.Format("{0:00}:{1:00}:{2:00}", curMin, curSec, curCent);
+
+        return curTime;
+    }
+
+    public void UpdateCurrentPlayer(PieceTypes pieceType)
+    {
+        textCurrentPlayer.text = pieceType.ToString();
     }
 
     public void TurnPauseOn()

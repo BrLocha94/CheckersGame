@@ -179,6 +179,7 @@ MonoBehaviour:
   colorBaseBlack: {r: 1, g: 0.06132078, b: 0.06132078, a: 1}
   timeAnimationMinimum: 0.5
   timeAnimationMaximum: 1
+  timeMoviment: 0.1
 --- !u!50 &7262705511381235200
 Rigidbody2D:
   serializedVersion: 4
