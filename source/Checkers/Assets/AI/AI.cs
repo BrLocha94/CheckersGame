@@ -3,22 +3,22 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+public class Play
+{
+    public BoardPiece piece { get; set; }
+    public BoardTile target { get; set; }
+    public BoardPiece eliminatedBy { get; set; }
+}
+
 public class AI : MonoBehaviour
 {
     BoardTile[,] board;
     List<BoardPiece> pieces;
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
+    //bool mandatoryMove;
 
-    /*void AIBoardPiece(BoardPiece target)
-    {
-        int actualRow = target.currentTile.row;
-        int actualColumn = target.currentTile.column;
-
-
-    }*/
-
-    private bool OnBoardLimits(int row, int column)
+    bool OnBoardLimits(int row, int column)
     {
         if (row < 0 || row >= board.GetLength(0)) return false;
 
@@ -43,7 +43,9 @@ public class AI : MonoBehaviour
         if (board[row, column].currentPiece == null)
         {
             if (lastPiece != null)
+            {
                 board[row, column].ApplyColorEffect(false);
+            }
             else
                 board[row, column].ApplyColorEffect(true);
 
@@ -125,9 +127,27 @@ public class AI : MonoBehaviour
         }
     }
 
-    void AIPlay()
+    Play AIPlay()
     {
         //when it's possible to eliminate, the ai should do a eliminate play
         //when it's not, the ai should do a random piece play
+        ListPossibleMoves();
+        Play p = new Play();
+        // gerando uma lista de keys (pecas)
+        List<BoardPiece> playablePieces = new List<BoardPiece>(dictionaryAvaliableMoves.Keys);
+        // sorteando um index para pegar uma peça da lista 
+        int pieceIndex = Random.Range(0, dictionaryAvaliableMoves.Count - 1);
+        
+        p.piece = playablePieces[pieceIndex];
+
+        // sorteando o index do movimento que a peça ira fazer
+        int playIndex = Random.Range(0, dictionaryAvaliableMoves[p.piece].Count);
+        
+        //define o alvo depois de escolher o tile possivel de jogada
+        p.target = dictionaryAvaliableMoves[p.piece][playIndex].tile;
+        //define a peça eliminada pela jogada
+        p.eliminatedBy = 
+
+        return p;
     }
 }
