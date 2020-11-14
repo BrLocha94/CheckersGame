@@ -17,7 +17,7 @@ public class AI : MonoBehaviour
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
     //bool mandatoryMove;
-    Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>();
+    Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
 
     bool OnBoardLimits(int row, int column)
     {
@@ -143,7 +143,7 @@ public class AI : MonoBehaviour
         p.piece = playablePieces[pieceIndex];
 
         // sorteando o index do movimento que a peça ira fazer
-        int playIndex = Random.Range(0, dictionaryAvaliableMoves[p.piece].Count);
+        int playIndex = Random.Range(0, dictionaryAvaliableMoves[p.piece].Count - 1);
         
         //define o alvo depois de escolher o tile possivel de jogada
         p.target = dictionaryAvaliableMoves[p.piece][playIndex].tile;
