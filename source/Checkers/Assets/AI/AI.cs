@@ -59,6 +59,7 @@ public class AI : MonoBehaviour
             if (isKing == true)
                 AIBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
 
+
             return true;
         }
 
@@ -135,19 +136,23 @@ public class AI : MonoBehaviour
         //when it's not, the ai should do a random piece play
         ListPossibleMoves();
         Play p = new Play();
+        
         // gerando uma lista de keys (pecas)
         List<BoardPiece> playablePieces = new List<BoardPiece>(dictionaryAvaliableMoves.Keys);
+        
         // sorteando um index para pegar uma peça da lista 
         int pieceIndex = Random.Range(0, dictionaryAvaliableMoves.Count - 1);
         
         p.piece = playablePieces[pieceIndex];
 
         // sorteando o index do movimento que a peça ira fazer
-        int playIndex = Random.Range(0, dictionaryAvaliableMoves[p.piece].Count - 1);
+        int moveIndex = Random.Range(0, dictionaryAvaliableMoves[p.piece].Count - 1);
         
         //define o alvo depois de escolher o tile possivel de jogada
-        p.target = dictionaryAvaliableMoves[p.piece][playIndex].tile;
+        p.target = dictionaryAvaliableMoves[p.piece][moveIndex].tile;
+
         //define a peça eliminada pela jogada
+        p.eliminatedBy = eliminated[p.piece];
 
         return p;
     }
