@@ -17,6 +17,7 @@ public class AI : MonoBehaviour
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
     //bool mandatoryMove;
+    Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>();
 
     bool OnBoardLimits(int row, int column)
     {
@@ -77,6 +78,7 @@ public class AI : MonoBehaviour
     {
         board = null;
         pieces.Clear();
+        dictionaryAvaliableMoves.Clear();
         //initiate game board
         board = Board.instance.GetBoard();
         //checking dark pieces
@@ -104,22 +106,22 @@ public class AI : MonoBehaviour
             if (pieces[i].IsKing()) //if the actual piece is a king
             {
                 //checking diagonals
-                bool downRight = AIKingTile(actualRow + 1, actualCol + 1, 1, 1, pieces[i].pieceType);
-                bool downLeft = AIKingTile(actualRow + 1, actualCol - 1, 1, -1, pieces[i].pieceType);
-                bool upRight = AIKingTile(actualRow - 1, actualCol + 1, -1, 1, pieces[i].pieceType);
-                bool upLeft = AIKingTile(actualRow - 1, actualCol - 1, -1, -1, pieces[i].pieceType);
+                bool downRight = AIKingTile(actualRow + 1, actualCol + 1, 1, 1, PieceTypes.White);
+                bool downLeft = AIKingTile(actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
+                bool upRight = AIKingTile(actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
+                bool upLeft = AIKingTile(actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
             }
             else
             {
                 if (pieces[i].IsTopMoviment())
                 {
-                    bool upRight = AIBoardTile(actualRow - 1, actualCol + 1, -1, 1, pieces[i].pieceType);
-                    bool upLeft = AIBoardTile(actualRow - 1, actualCol - 1, -1, -1, pieces[i].pieceType);
+                    bool upRight = AIBoardTile(actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
+                    bool upLeft = AIBoardTile(actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
                 }
                 else
                 {
-                    bool downRight = AIBoardTile(actualRow + 1, actualCol + 1, 1, 1, pieces[i].pieceType);
-                    bool downLeft = AIBoardTile(actualRow + 1, actualCol - 1, 1, -1, pieces[i].pieceType);
+                    bool downRight = AIBoardTile(actualRow + 1, actualCol + 1, 1, 1, PieceTypes.White);
+                    bool downLeft = AIBoardTile(actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
                 }
             }
 
@@ -146,7 +148,6 @@ public class AI : MonoBehaviour
         //define o alvo depois de escolher o tile possivel de jogada
         p.target = dictionaryAvaliableMoves[p.piece][playIndex].tile;
         //define a peça eliminada pela jogada
-        p.eliminatedBy = 
 
         return p;
     }
