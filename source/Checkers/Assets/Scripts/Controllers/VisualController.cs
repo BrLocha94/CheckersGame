@@ -11,11 +11,15 @@ public class VisualController : MonoSingleton<VisualController>
 
     [Space]
 
-    [Header("General Ui texts")]
+    [Header("General Visual references")]
     [SerializeField]
     private Text textTime = null;
     [SerializeField]
-    private Text textCurrentPlayer = null;
+    private Image imageCurrentPiece = null;
+    [SerializeField]
+    private Color colorPieceWhite = Color.white;
+    [SerializeField]
+    private Color colorPieceBlack = Color.black;
 
     [Space]
 
@@ -76,7 +80,10 @@ public class VisualController : MonoSingleton<VisualController>
 
     public void UpdateCurrentPlayer(PieceTypes pieceType)
     {
-        textCurrentPlayer.text = pieceType.ToString();
+        if (pieceType == PieceTypes.White)
+            imageCurrentPiece.color = colorPieceWhite;
+        else
+            imageCurrentPiece.color = colorPieceBlack;
     }
 
     public void TurnPauseOn()
