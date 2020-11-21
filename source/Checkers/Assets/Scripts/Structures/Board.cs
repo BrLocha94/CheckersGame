@@ -440,6 +440,12 @@ public class Board : MonoSingleton<Board>
             currentPieceType = PieceTypes.White;
 
         VisualController.instance.UpdateCurrentPlayer(currentPieceType);
+
+
+        if(GameController.instance.againstAI == true || currentPieceType == PieceTypes.Black)
+        {
+            GameController.instance.ChangeGameState(GameStates.AIMoviment);
+        }
     }
 
     public bool CanCheckMoves()

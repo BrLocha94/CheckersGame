@@ -59,6 +59,7 @@ public enum GameStates
     Intro,
     SpawningPieces,
     Running,
+    AIMoviment,
     Paused,
     Tutorial,
     Confirm,
