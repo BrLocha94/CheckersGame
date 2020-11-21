@@ -11,6 +11,7 @@ public class AI : MonoBehaviour
     List<BoardPiece> pieces = new List<BoardPiece>();
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
+    BoardPiece pieceDestroyed = new BoardPiece();
     Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
 
     #region AIRegion
@@ -62,6 +63,7 @@ public class AI : MonoBehaviour
             newInfo.tile = board[row, column];
 
             listAvaliableMoves.Add(newInfo);
+            pieceDestroyed = lastPiece;
 
             if (isKing == true)
                 AIBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
@@ -134,6 +136,7 @@ public class AI : MonoBehaviour
             }
 
             dictionaryAvaliableMoves.Add(pieces[i], listAvaliableMoves);
+            eliminated.Add(pieces[i], pieceDestroyed);
         }
     }
 
