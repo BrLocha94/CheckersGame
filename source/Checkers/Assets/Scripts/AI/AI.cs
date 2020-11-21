@@ -4,12 +4,39 @@ using UnityEngine;
 
 public class AI : MonoBehaviour
 {
+    [SerializeField]
+    private float timeToStartCalculation = 1f;
+
     BoardTile[,] board;
     List<BoardPiece> pieces;
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
     //bool mandatoryMove;
     Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
+
+    #region AIRegion
+
+    public GameStates currentGameState { get; private set; }
+
+    void OnGameStateChange(GameStates newGameState)
+    {
+        currentGameState = newGameState;
+
+        if (newGameState == GameStates.AIMoviment)
+            StartCoroutine(IaMovimentRoutine(timeToStartCalculation));
+    }
+
+    private void OnEnable()
+    {
+        GameController.onGameStateChange += OnGameStateChange;
+    }
+
+    private void OnDisable()
+    {
+        GameController.onGameStateChange -= OnGameStateChange;
+    }
+
+    #endregion
 
     bool OnBoardLimits(int row, int column)
     {
@@ -147,5 +174,10 @@ public class AI : MonoBehaviour
         aiMoviment.eliminatedBy = eliminated[aiMoviment.piece];
 
         return aiMoviment;
+    }
+
+    IEnumerator IaMovimentRoutine(float timer)
+    {
+        yield return new WaitForSeconds(timer);
     }
 }
