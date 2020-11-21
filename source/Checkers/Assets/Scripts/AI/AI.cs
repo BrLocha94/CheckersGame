@@ -8,10 +8,9 @@ public class AI : MonoBehaviour
     private float timeToStartCalculation = 1f;
 
     BoardTile[,] board;
-    List<BoardPiece> pieces;
+    List<BoardPiece> pieces = new List<BoardPiece>();
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
-    //bool mandatoryMove;
     Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
 
     #region AIRegion
@@ -49,11 +48,7 @@ public class AI : MonoBehaviour
 
     bool AIKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
     {
-        bool check = AIBoardTile(row, column, rowFactor, columnFactor, targetType, true);
-
-        Debug.Log(check);
-
-        return check;
+        return AIBoardTile(row, column, rowFactor, columnFactor, targetType, true);
     }
 
     bool AIBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
@@ -62,13 +57,6 @@ public class AI : MonoBehaviour
 
         if (board[row, column].currentPiece == null)
         {
-            if (lastPiece != null)
-            {
-                board[row, column].ApplyColorEffect(false);
-            }
-            else
-                board[row, column].ApplyColorEffect(true);
-
             BoardInfoHolder newInfo = new BoardInfoHolder();
             newInfo.piece = lastPiece;
             newInfo.tile = board[row, column];
@@ -77,7 +65,6 @@ public class AI : MonoBehaviour
 
             if (isKing == true)
                 AIBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
-
 
             return true;
         }
@@ -99,7 +86,8 @@ public class AI : MonoBehaviour
         board = null;
         pieces.Clear();
         dictionaryAvaliableMoves.Clear();
-        //initiate game board
+        eliminated.Clear();
+
         board = Board.instance.GetBoard();
         //checking dark pieces
         for (int i = 0; i < board.GetLength(0); i++)
@@ -158,20 +146,32 @@ public class AI : MonoBehaviour
         
         // gerando uma lista de keys (pecas)
         List<BoardPiece> playablePieces = new List<BoardPiece>(dictionaryAvaliableMoves.Keys);
-        
+
+        Debug.Log("Playable pieces count " + playablePieces.Count);
+
         // sorteando um index para pegar uma peça da lista 
-        int pieceIndex = Random.Range(0, dictionaryAvaliableMoves.Count - 1);
+        int pieceIndex = Random.Range(0, dictionaryAvaliableMoves.Count);
+
+        Debug.Log("Piece index " + pieceIndex);
 
         aiMoviment.piece = playablePieces[pieceIndex];
 
+        Debug.Log("AI Moviment piece " + aiMoviment.piece);
+
         // sorteando o index do movimento que a peça ira fazer
-        int moveIndex = Random.Range(0, dictionaryAvaliableMoves[aiMoviment.piece].Count - 1);
+        int moveIndex = Random.Range(0, dictionaryAvaliableMoves[aiMoviment.piece].Count);
+
+        Debug.Log("Move index " + moveIndex);
 
         //define o alvo depois de escolher o tile possivel de jogada
         aiMoviment.target = dictionaryAvaliableMoves[aiMoviment.piece][moveIndex].tile;
 
+        Debug.Log("AI Moviment target " + aiMoviment.target);
+
         //define a peça eliminada pela jogada
         aiMoviment.eliminatedBy = eliminated[aiMoviment.piece];
+
+        Debug.Log("AI Moviment eliminated by " + aiMoviment.eliminatedBy);
 
         return aiMoviment;
     }
