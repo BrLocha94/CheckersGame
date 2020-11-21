@@ -114,7 +114,7 @@ public class AI : MonoBehaviour
             }
             else
             {
-                if (pieces[i].IsTopMoviment())
+                if (pieces[i].IsDownMoviment())
                 {
                     bool upRight = AIBoardTile(actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
                     bool upLeft = AIBoardTile(actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
