@@ -427,6 +427,11 @@ public class Board : MonoSingleton<Board>
         return 0;
     }
 
+    public BoardTile[,] GetBoard()
+    {
+        return board;
+    }
+    
     private void NextTurn()
     {
         if (currentPieceType == PieceTypes.White)
