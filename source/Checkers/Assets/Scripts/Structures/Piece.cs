@@ -6,13 +6,13 @@ public class Piece : SpriteBase
 {
     [Header("Crown Sprite to activate/deactivate")]
     [SerializeField]
-    private GameObject crownSprite;
+    private GameObject crownSprite = null;
 
     [Header("General colors to use on this board")]
     [SerializeField]
-    private Color colorBaseWhite;
+    private Color colorBaseWhite = Color.white;
     [SerializeField]
-    private Color colorBaseBlack;
+    private Color colorBaseBlack = Color.black;
 
     public PieceTypes pieceType { get; private set; }
     public PieceInitialDirection pieceInitialDirection { get; private set; }

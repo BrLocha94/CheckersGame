@@ -8,6 +8,8 @@ public class BoardPiece : Piece
     private float timeAnimationMinimum = 0.15f;
     [SerializeField]
     private float timeAnimationMaximum = 0.5f;
+    [SerializeField]
+    private float timeMoviment = 0.5f;
 
     public BoardTile currentTile { get; set; }
 
@@ -27,6 +29,15 @@ public class BoardPiece : Piece
 
         if(IsDownMoviment() && currentTile.row == 0 || !IsDownMoviment() && currentTile.row == boardSize - 1)
             PromotePiece();
+    }
+
+    public void MoveTo(Vector3 target)
+    {
+        iTween.MoveTo(gameObject, iTween.Hash(
+            "time", timeMoviment,
+            "position", target,
+            "easetype", iTween.EaseType.linear));
+        
     }
 
     #region Mouse Click Treatement

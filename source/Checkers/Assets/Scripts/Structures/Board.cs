@@ -6,21 +6,29 @@ public class Board : MonoSingleton<Board>
 {
     [Header("Board basic dimensions")]
     [SerializeField]
+    [Range(4, 20)]
     private int rows = 8;
     [SerializeField]
+    [Range(4, 20)]
     private int columns = 8;
+
+    [Space]
 
     [Header("Tile prefab used instantiate board")]
     [SerializeField]
-    private BoardTile tilePrefab;
+    private BoardTile tilePrefab = null;
     [SerializeField]
-    private GameObject tilesParent;
+    private SpriteRenderer framePrefab = null;
+    [SerializeField]
+    private GameObject tilesParent = null;
+
+    [Space]
 
     [Header("Pieces prefab to instantiate")]
     [SerializeField]
-    private BoardPiece piecePrefab;
+    private BoardPiece piecePrefab = null;
     [SerializeField]
-    private GameObject piecesParent;
+    private GameObject piecesParent = null;
 
     private List<BoardPiece> listBoardPieces = new List<BoardPiece>();
 
@@ -82,6 +90,20 @@ public class Board : MonoSingleton<Board>
     {
         board = new BoardTile[rows, columns];
 
+        //Create frame
+        if (framePrefab != null)
+        {   
+            SpriteRenderer frame = Instantiate(framePrefab, 
+                                            new Vector3(transform.position.x,
+                                                        transform.position.y,
+                                                        0f),
+                                            framePrefab.transform.rotation);
+
+            frame.transform.SetParent(tilesParent.transform);
+
+            frame.transform.localScale = new Vector2(columns + 0.3f, rows + 0.3f);
+        }
+
         for (int i = 0; i < rows; i++)
         {
             for(int j = 0; j < columns; j++)
@@ -120,7 +142,20 @@ public class Board : MonoSingleton<Board>
 
     private void SpawPieces()
     {
+        ClearPiecesList();
         StartCoroutine(SpawPiecesRoutine());
+    }
+
+    private void ClearPiecesList()
+    {
+        if (listBoardPieces.Count == 0) return;
+
+        for(int i = listBoardPieces.Count - 1; i >= 0; i++)
+        {
+            BoardPiece piece = listBoardPieces[i];
+            listBoardPieces.RemoveAt(i);
+            Destroy(piece.gameObject);
+        }
     }
 
     IEnumerator SpawPiecesRoutine()
@@ -129,7 +164,7 @@ public class Board : MonoSingleton<Board>
         {
             //Initialize pieces on TOP
             //Com Pieces
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < (rows/2 - 1); i++)
             {
                 for (int j = 0; j < columns; j++)
                 {
@@ -151,7 +186,7 @@ public class Board : MonoSingleton<Board>
 
             //Initialize pieces on DOWN
             //Player pieces
-            for (int i = rows - 1; i > rows - 4; i--)
+            for (int i = rows - 1; i > rows/2; i--)
             {
                 for (int j = 0; j < columns; j++)
                 {
@@ -170,6 +205,7 @@ public class Board : MonoSingleton<Board>
             }
 
             currentPieceType = PieceTypes.White;
+            VisualController.instance.UpdateCurrentPlayer(currentPieceType);
         }
 
         yield return null;
@@ -326,7 +362,9 @@ public class Board : MonoSingleton<Board>
         targetTile.currentPiece = currentPiece;
 
         currentPiece.currentTile = targetTile;
-        currentPiece.transform.position = targetTile.transform.position;
+
+        currentPiece.MoveTo(targetTile.transform.position);
+        //currentPiece.transform.position = targetTile.transform.position;
 
         currentPiece.CheckPromotion(rows);
     }
@@ -395,6 +433,8 @@ public class Board : MonoSingleton<Board>
             currentPieceType = PieceTypes.Black;
         else if (currentPieceType == PieceTypes.Black)
             currentPieceType = PieceTypes.White;
+
+        VisualController.instance.UpdateCurrentPlayer(currentPieceType);
     }
 
     public bool CanCheckMoves()
