@@ -17,7 +17,9 @@ public class AI : MonoBehaviour
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
     //bool mandatoryMove;
-    Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
+
+    BoardPiece eliminated = new BoardPiece(); //piece that will be eliminated
+    Dictionary<BoardPiece, BoardPiece> eliminatedByPiece = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
 
     bool OnBoardLimits(int row, int column)
     {
@@ -55,6 +57,8 @@ public class AI : MonoBehaviour
             newInfo.tile = board[row, column];
 
             listAvaliableMoves.Add(newInfo);
+            eliminated = lastPiece;
+            
 
             if (isKing == true)
                 AIBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
@@ -99,6 +103,7 @@ public class AI : MonoBehaviour
         //list possible piece moves
         for (int i = 0; i < pieces.Count; i++)
         {
+            eliminated = new BoardPiece();
             listAvaliableMoves.Clear();
             //getting piece tile coordinates
             int actualRow = pieces[i].currentTile.row;
@@ -127,6 +132,7 @@ public class AI : MonoBehaviour
             }
 
             dictionaryAvaliableMoves.Add(pieces[i], listAvaliableMoves);
+            eliminatedByPiece.Add(pieces[i], eliminated);
         }
     }
 
@@ -152,7 +158,7 @@ public class AI : MonoBehaviour
         p.target = dictionaryAvaliableMoves[p.piece][moveIndex].tile;
 
         //define a peça eliminada pela jogada
-        p.eliminatedBy = eliminated[p.piece];
+        p.eliminatedBy = eliminatedByPiece[p.piece];
 
         return p;
     }
