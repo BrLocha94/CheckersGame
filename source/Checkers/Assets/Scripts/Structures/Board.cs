@@ -6,21 +6,29 @@ public class Board : MonoSingleton<Board>
 {
     [Header("Board basic dimensions")]
     [SerializeField]
+    [Range(4, 20)]
     private int rows = 8;
     [SerializeField]
+    [Range(4, 20)]
     private int columns = 8;
+
+    [Space]
 
     [Header("Tile prefab used instantiate board")]
     [SerializeField]
-    private BoardTile tilePrefab;
+    private BoardTile tilePrefab = null;
     [SerializeField]
-    private GameObject tilesParent;
+    private SpriteRenderer framePrefab = null;
+    [SerializeField]
+    private GameObject tilesParent = null;
+
+    [Space]
 
     [Header("Pieces prefab to instantiate")]
     [SerializeField]
-    private BoardPiece piecePrefab;
+    private BoardPiece piecePrefab = null;
     [SerializeField]
-    private GameObject piecesParent;
+    private GameObject piecesParent = null;
 
     private List<BoardPiece> listBoardPieces = new List<BoardPiece>();
 
@@ -29,9 +37,36 @@ public class Board : MonoSingleton<Board>
     BoardPiece currentPiece = null;
     List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>();
 
+    #region Delegates Region
+
+    public PieceTypes currentPieceType { get; private set; }
+    public GameStates currentGameState { get; private set; }
+
+    void OnGameStateChange(GameStates newGameState)
+    {
+        currentGameState = newGameState;
+
+        if (newGameState == GameStates.Initializing)
+            InitializeBoard();
+        else if (newGameState == GameStates.SpawningPieces)
+            SpawPieces();
+    }
+
+    private void OnEnable()
+    {
+        GameController.onGameStateChange += OnGameStateChange;
+    }
+
+    private void OnDisable()
+    {
+        GameController.onGameStateChange -= OnGameStateChange;
+    }
+
+    #endregion
+
     #region Board Creation
 
-    void Start()
+    private void InitializeBoard()
     {
         if (tilePrefab != null)
         {
@@ -43,7 +78,6 @@ public class Board : MonoSingleton<Board>
                 Vector2 baseSpaw = SetBaseSpaw(transform.position, offset);
 
                 CreateBoard(offset, baseSpaw);
-                SpawPieces();
             }
             else
                 Debug.Log("Class Board, method Start: Cant acess tile prefab sprite");
@@ -55,6 +89,20 @@ public class Board : MonoSingleton<Board>
     private void CreateBoard(Vector2 offset, Vector2 baseSpaw)
     {
         board = new BoardTile[rows, columns];
+
+        //Create frame
+        if (framePrefab != null)
+        {   
+            SpriteRenderer frame = Instantiate(framePrefab, 
+                                            new Vector3(transform.position.x,
+                                                        transform.position.y,
+                                                        0f),
+                                            framePrefab.transform.rotation);
+
+            frame.transform.SetParent(tilesParent.transform);
+
+            frame.transform.localScale = new Vector2(columns + 0.3f, rows + 0.3f);
+        }
 
         for (int i = 0; i < rows; i++)
         {
@@ -94,10 +142,29 @@ public class Board : MonoSingleton<Board>
 
     private void SpawPieces()
     {
+        ClearPiecesList();
+        StartCoroutine(SpawPiecesRoutine());
+    }
+
+    private void ClearPiecesList()
+    {
+        if (listBoardPieces.Count == 0) return;
+
+        for(int i = listBoardPieces.Count - 1; i >= 0; i++)
+        {
+            BoardPiece piece = listBoardPieces[i];
+            listBoardPieces.RemoveAt(i);
+            Destroy(piece.gameObject);
+        }
+    }
+
+    IEnumerator SpawPiecesRoutine()
+    {
         if (board != null)
         {
             //Initialize pieces on TOP
-            for (int i = 0; i < 3; i++)
+            //Com Pieces
+            for (int i = 0; i < (rows/2 - 1); i++)
             {
                 for (int j = 0; j < columns; j++)
                 {
@@ -106,7 +173,7 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.InitializeBoardPiece(false, false);
+                    piece.InitializeBoardPiece(false);
 
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
@@ -114,9 +181,12 @@ public class Board : MonoSingleton<Board>
                     listBoardPieces.Add(piece);
                 }
             }
+
+            yield return new WaitForSeconds(0.5f);
 
             //Initialize pieces on DOWN
-            for (int i = rows - 1; i > rows - 4; i--)
+            //Player pieces
+            for (int i = rows - 1; i > rows/2; i--)
             {
                 for (int j = 0; j < columns; j++)
                 {
@@ -125,7 +195,7 @@ public class Board : MonoSingleton<Board>
                     BoardPiece piece = Instantiate(piecePrefab, piecesParent.transform);
 
                     piece.transform.position = board[i, j].transform.position;
-                    piece.InitializeBoardPiece(true, true);
+                    piece.InitializeBoardPiece(true);
 
                     piece.currentTile = board[i, j];
                     board[i, j].currentPiece = piece;
@@ -133,7 +203,12 @@ public class Board : MonoSingleton<Board>
                     listBoardPieces.Add(piece);
                 }
             }
+
+            currentPieceType = PieceTypes.White;
+            VisualController.instance.UpdateCurrentPlayer(currentPieceType);
         }
+
+        yield return null;
     }
 
     #endregion
@@ -156,10 +231,8 @@ public class Board : MonoSingleton<Board>
         int actualRow = target.currentTile.row;
         int actualCol = target.currentTile.column;
 
-        //Check logic and if can move currentPiece == target
         if (target.IsKing())
         {
-            //checking diagonals
             bool downRight = CheckKingTile(actualRow + 1, actualCol + 1,  1,  1, target.pieceType);
             bool downLeft  = CheckKingTile(actualRow + 1, actualCol - 1,  1, -1, target.pieceType);
             bool upRight   = CheckKingTile(actualRow - 1, actualCol + 1, -1,  1, target.pieceType);
@@ -170,7 +243,7 @@ public class Board : MonoSingleton<Board>
         }
         else
         {
-            if (target.IsTopMoviment())
+            if (target.IsDownMoviment())
             {
                 bool upRight = CheckBoardTile(actualRow - 1, actualCol + 1, -1, 1, target.pieceType);
                 bool upLeft = CheckBoardTile(actualRow - 1, actualCol - 1, -1, -1, target.pieceType);
@@ -189,14 +262,7 @@ public class Board : MonoSingleton<Board>
 
     private bool CheckKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
     {
-        bool check = CheckBoardTile(row, column, rowFactor, columnFactor, targetType, true);
-
-        //if (check == true)
-        //    CheckKingTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType);
-
-        Debug.Log(check);
-
-        return check;
+        return CheckBoardTile(row, column, rowFactor, columnFactor, targetType, true);
     }
 
     private bool CheckBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
@@ -248,12 +314,44 @@ public class Board : MonoSingleton<Board>
 
         ClearLastTileEffects();
 
-        if(removedPiece != null)
+        if (removedPiece != null)
         {
             listBoardPieces.Remove(removedPiece);
             Destroy(removedPiece.gameObject);
+
             //Check if game is over
+            if (CheckGameOver() == true)
+            {
+                if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+                    GameController.instance.ChangeGameState(GameStates.GameClear);
+                else
+                    GameController.instance.ChangeGameState(GameStates.GameOver);
+            }
+            else
+                
+            //else next turn
+            NextTurn();
         }
+        else
+            NextTurn();
+    }
+
+    private bool CheckGameOver()
+    {
+        bool white = false;
+        bool black = false;
+
+        for(int i = 0; i < listBoardPieces.Count; i++)
+        {
+            if (listBoardPieces[i].CheckPieceType(PieceTypes.White))
+                white = true;
+            else if (listBoardPieces[i].CheckPieceType(PieceTypes.Black))
+                black = true;
+
+            if (white && black) return false;
+        }
+
+        return true;
     }
 
     private void MovePiece(BoardPiece currentPiece, BoardTile targetTile)
@@ -264,7 +362,9 @@ public class Board : MonoSingleton<Board>
         targetTile.currentPiece = currentPiece;
 
         currentPiece.currentTile = targetTile;
-        currentPiece.transform.position = targetTile.transform.position;
+
+        currentPiece.MoveTo(targetTile.transform.position);
+        //currentPiece.transform.position = targetTile.transform.position;
 
         currentPiece.CheckPromotion(rows);
     }
@@ -330,5 +430,20 @@ public class Board : MonoSingleton<Board>
     public BoardTile[,] GetBoard()
     {
         return board;
+    }
+    
+    private void NextTurn()
+    {
+        if (currentPieceType == PieceTypes.White)
+            currentPieceType = PieceTypes.Black;
+        else if (currentPieceType == PieceTypes.Black)
+            currentPieceType = PieceTypes.White;
+
+        VisualController.instance.UpdateCurrentPlayer(currentPieceType);
+    }
+
+    public bool CanCheckMoves()
+    {
+        return currentGameState == GameStates.Running ? true : false;
     }
 }

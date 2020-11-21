@@ -6,13 +6,13 @@ public class Tile : SpriteBase
 {
     [Header("General colors to use on this board")]
     [SerializeField]
-    private Color colorBaseWhite;
+    private Color colorBaseWhite = Color.white;
     [SerializeField]
-    private Color colorBaseBlack;
+    private Color colorBaseBlack = Color.black;
     [SerializeField]
-    private Color colorAllowed;
+    private Color colorAllowed = Color.green;
     [SerializeField]
-    private Color colorPreferencial;
+    private Color colorPreferencial = Color.yellow;
 
     public int row { get; private set; }
     public int column { get; private set; }

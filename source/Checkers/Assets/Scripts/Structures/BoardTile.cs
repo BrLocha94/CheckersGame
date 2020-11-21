@@ -51,10 +51,11 @@ public class BoardTile : Tile
 
     void OnClick()
     {
-        if (Board.instance != null)
-        {
-            Board.instance.BoardTileClickd(this);
-        }
+        if (Board.instance == null) return;
+
+        if (Board.instance.CanCheckMoves() == false) return;
+
+        Board.instance.BoardTileClickd(this);
     }
 
     #endregion
