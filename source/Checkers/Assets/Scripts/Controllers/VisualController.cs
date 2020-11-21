@@ -59,15 +59,15 @@ public class VisualController : MonoSingleton<VisualController>
 
     void Update()
     {
-        if(currentGameState == GameStates.Running)
+        if(currentGameState == GameStates.Running || currentGameState == GameStates.AIMoviment)
         {
             time += Time.deltaTime;
 
-            textTime.text = UpdateRaceTime(time);
+            textTime.text = UpdateGameTime(time);
         }
     }
 
-    public string UpdateRaceTime(float currentTime)
+    public string UpdateGameTime(float currentTime)
     {
         int curMin = Mathf.FloorToInt(currentTime / 60f);
         int curSec = Mathf.FloorToInt(currentTime - curMin * 60);

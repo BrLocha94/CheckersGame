@@ -179,5 +179,9 @@ public class AI : MonoBehaviour
     IEnumerator IaMovimentRoutine(float timer)
     {
         yield return new WaitForSeconds(timer);
+
+        AIMoviment moviment = AIPlay();
+
+        Board.instance.AIMove(moviment);
     }
 }
