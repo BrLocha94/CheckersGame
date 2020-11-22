@@ -112,22 +112,22 @@ public class AI : MonoBehaviour
             if (pieces[i].IsKing()) //if the actual piece is a king
             {
                 //checking diagonals
-                bool downRight = AIKingTile(pieces[i], actualRow + 1, actualCol + 1, 1, 1, PieceTypes.White);
-                bool downLeft = AIKingTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
-                bool upRight = AIKingTile(pieces[i], actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
-                bool upLeft = AIKingTile(pieces[i], actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
+                bool downRight = AIKingTile(pieces[i], actualRow + 1, actualCol + 1, 1, 1, PieceTypes.Black);
+                bool downLeft = AIKingTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.Black);
+                bool upRight = AIKingTile(pieces[i], actualRow - 1, actualCol + 1, -1, 1, PieceTypes.Black);
+                bool upLeft = AIKingTile(pieces[i], actualRow - 1, actualCol - 1, -1, -1, PieceTypes.Black);
             }
             else
             {
                 if (pieces[i].IsDownMoviment())
                 {
-                    bool upRight = AIBoardTile(pieces[i], actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
-                    bool upLeft = AIBoardTile(pieces[i], actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
+                    bool upRight = AIBoardTile(pieces[i], actualRow - 1, actualCol + 1, -1, 1, PieceTypes.Black);
+                    bool upLeft = AIBoardTile(pieces[i], actualRow - 1, actualCol - 1, -1, -1, PieceTypes.Black);
                 }
                 else
                 {
-                    bool downRight = AIBoardTile(pieces[i], actualRow + 1, actualCol + 1, 1, 1, PieceTypes.White);
-                    bool downLeft = AIBoardTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
+                    bool downRight = AIBoardTile(pieces[i], actualRow + 1, actualCol + 1, 1, 1, PieceTypes.Black);
+                    bool downLeft = AIBoardTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.Black);
                 }
             }
         }
@@ -138,10 +138,26 @@ public class AI : MonoBehaviour
         //do a random ai play
         ListPossibleMoves();
 
-        Debug.Log("List avaliable moves count " + listAvaliableMoves.Count);
+        List<AIMoviment> priorityMoves = new List<AIMoviment>();
 
-        int rand = Random.Range(0, listAvaliableMoves.Count);
-        return listAvaliableMoves[rand];
+        for(int i = 0; i < listAvaliableMoves.Count; i++)
+        {
+            if(listAvaliableMoves[i].eliminatedBy != null)
+            {
+                priorityMoves.Add(listAvaliableMoves[i]);
+            }
+        }
+
+        if(priorityMoves.Count > 0)
+        {
+            int rand = Random.Range(0, priorityMoves.Count);
+            return priorityMoves[rand];
+        }
+        else
+        {
+            int rand = Random.Range(0, listAvaliableMoves.Count);
+            return listAvaliableMoves[rand];
+        }
     }
 
     IEnumerator IaMovimentRoutine(float timer)
