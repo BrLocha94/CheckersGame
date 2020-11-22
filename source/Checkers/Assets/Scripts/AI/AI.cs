@@ -9,10 +9,7 @@ public class AI : MonoBehaviour
 
     BoardTile[,] board;
     List<BoardPiece> pieces = new List<BoardPiece>();
-    //List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
     List<AIMoviment> listAvaliableMoves = new List<AIMoviment>();
-    //Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
-    BoardPiece pieceDestroyed = new BoardPiece();
 
     #region AIRegion
 
@@ -54,21 +51,14 @@ public class AI : MonoBehaviour
 
     bool AIBoardTile(BoardPiece actualPiece, int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
     {
-        Debug.Log("ENTERED AIBOARDTILE");
         if (OnBoardLimits(row, column) == false) return false;
 
         if (board[row, column].currentPiece == null)
         {
-            Debug.Log("CURRENT PIECE == NULL");
-
-
             AIMoviment newMove = new AIMoviment();
             newMove.piece = actualPiece;
             newMove.target = board[row, column];
             newMove.eliminatedBy = lastPiece;
-
-            Debug.Log("-----------AVALIABLE MOVES: " + listAvaliableMoves.Count);
-
 
             listAvaliableMoves.Add(newMove);
 
@@ -81,7 +71,6 @@ public class AI : MonoBehaviour
         //Check effects when piece != null
         if (board[row, column].currentPiece != null && lastPiece == null)
         {
-            Debug.Log("CURRENT PIECE != NULL");
             if (board[row, column].currentPiece.CheckPieceType(targetType))
                 return false;
 
@@ -95,9 +84,10 @@ public class AI : MonoBehaviour
     {
         board = null;
         pieces.Clear();
-        //dictionaryAvaliableMoves.Clear();
 
         board = Board.instance.GetBoard();
+        listAvaliableMoves = new List<AIMoviment>();
+
         //checking dark pieces
         for (int i = 0; i < board.GetLength(0); i++)
         {
@@ -115,7 +105,6 @@ public class AI : MonoBehaviour
         //list possible piece moves
         for (int i = 0; i < pieces.Count; i++)
         {
-            listAvaliableMoves = new List<AIMoviment>();
             //getting piece tile coordinates
             int actualRow = pieces[i].currentTile.row;
             int actualCol = pieces[i].currentTile.column;
@@ -141,8 +130,6 @@ public class AI : MonoBehaviour
                     bool downLeft = AIBoardTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
                 }
             }
-
-            //dictionaryAvaliableMoves.Add(pieces[i], listAvaliableMoves);
         }
     }
 
@@ -150,6 +137,9 @@ public class AI : MonoBehaviour
     {
         //do a random ai play
         ListPossibleMoves();
+
+        Debug.Log("List avaliable moves count " + listAvaliableMoves.Count);
+
         int rand = Random.Range(0, listAvaliableMoves.Count);
         return listAvaliableMoves[rand];
     }
