@@ -148,8 +148,7 @@ public class AI : MonoBehaviour
 
     AIMoviment AIPlay()
     {
-        //when it's possible to eliminate, the ai should do a eliminate play
-        //when it's not, the ai should do a random piece play
+        //do a random ai play
         ListPossibleMoves();
         int rand = Random.Range(0, listAvaliableMoves.Count);
         return listAvaliableMoves[rand];
