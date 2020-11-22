@@ -135,11 +135,12 @@ public class AI : MonoBehaviour
 
     AIMoviment AIPlay()
     {
-        //do a random ai play
+        //list all plays
         ListPossibleMoves();
 
         List<AIMoviment> priorityMoves = new List<AIMoviment>();
 
+        //get possible priority plays
         for(int i = 0; i < listAvaliableMoves.Count; i++)
         {
             if(listAvaliableMoves[i].eliminatedBy != null)
@@ -147,13 +148,13 @@ public class AI : MonoBehaviour
                 priorityMoves.Add(listAvaliableMoves[i]);
             }
         }
-
+        //if there is a priority play, it will be played
         if(priorityMoves.Count > 0)
         {
             int rand = Random.Range(0, priorityMoves.Count);
             return priorityMoves[rand];
         }
-        else
+        else //if there's not, play a random avaliable move
         {
             int rand = Random.Range(0, listAvaliableMoves.Count);
             return listAvaliableMoves[rand];
