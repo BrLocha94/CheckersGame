@@ -14,7 +14,7 @@ public class AI : MonoBehaviour
     BoardPiece pieceDestroyed = new BoardPiece();
     Dictionary<BoardPiece, BoardPiece> eliminated = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
 
-    #region AIRegion
+    #region Delegates
 
     public GameStates currentGameState { get; private set; }
 

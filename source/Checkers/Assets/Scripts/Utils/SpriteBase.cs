@@ -3,7 +3,7 @@
 [RequireComponent(typeof(SpriteRenderer))]
 public abstract class SpriteBase : MonoBehaviour
 {
-    protected SpriteRenderer spriteRenderer = null;
+    protected SpriteRenderer spriteRenderer;
 
     void Awake()
     {
