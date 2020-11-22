@@ -54,6 +54,7 @@ public class AI : MonoBehaviour
 
     bool AIBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
     {
+        Debug.Log("ENTERED AIBOARDTILE");
         if (OnBoardLimits(row, column) == false) return false;
 
         if (board[row, column].currentPiece == null)
@@ -61,6 +62,9 @@ public class AI : MonoBehaviour
             BoardInfoHolder newInfo = new BoardInfoHolder();
             newInfo.piece = lastPiece;
             newInfo.tile = board[row, column];
+
+            Debug.Log("New Info piece: " + newInfo.piece);
+            Debug.Log("New Info tile: " + newInfo.tile);
 
             listAvaliableMoves.Add(newInfo);
             pieceDestroyed = lastPiece;
@@ -161,13 +165,18 @@ public class AI : MonoBehaviour
 
         Debug.Log("AI Moviment piece " + aiMoviment.piece);
 
+        List<BoardInfoHolder> infoMove = new List<BoardInfoHolder>();
+        infoMove = dictionaryAvaliableMoves[aiMoviment.piece];
+
+        Debug.Log("Availiable moves " + infoMove.Count);
+
         // sorteando o index do movimento que a peça ira fazer
-        int moveIndex = Random.Range(0, dictionaryAvaliableMoves[aiMoviment.piece].Count);
+        int moveIndex = Random.Range(0, infoMove.Count);
 
         Debug.Log("Move index " + moveIndex);
 
         //define o alvo depois de escolher o tile possivel de jogada
-        aiMoviment.target = dictionaryAvaliableMoves[aiMoviment.piece][moveIndex].tile;
+        aiMoviment.target = infoMove[moveIndex].tile;
 
         Debug.Log("AI Moviment target " + aiMoviment.target);
 
