@@ -336,6 +336,42 @@ public class Board : MonoSingleton<Board>
             NextTurn();
     }
 
+    public void AIMove(AIMoviment moviment)
+    {
+        if(moviment == null)
+        {
+            Debug.Log("moviment from AI is null...GOING TO NEXT TURN");
+            NextTurn();
+            return;
+        }
+
+        if (moviment.piece == null) Debug.Log("AI moviment piece is null");
+
+        if (moviment.target == null) Debug.Log("AI moviment tile is null");
+
+        //if (moviment.eliminatedBy == null) Debug.Log("AI moviment emilimated piece is null");
+
+        MovePiece(moviment.piece, moviment.target);
+
+        if(moviment.eliminatedBy != null)
+        {
+            listBoardPieces.Remove(moviment.eliminatedBy);
+            Destroy(moviment.eliminatedBy.gameObject);
+
+            if (CheckGameOver() == true)
+            {
+                if (listBoardPieces[0].CheckPieceType(PieceTypes.White))
+                    GameController.instance.ChangeGameState(GameStates.GameClear);
+                else
+                    GameController.instance.ChangeGameState(GameStates.GameOver);
+            }
+            else
+                NextTurn();
+        }
+        else
+            NextTurn();
+    }
+
     private bool CheckGameOver()
     {
         bool white = false;
@@ -440,6 +476,12 @@ public class Board : MonoSingleton<Board>
             currentPieceType = PieceTypes.White;
 
         VisualController.instance.UpdateCurrentPlayer(currentPieceType);
+
+
+        if (GameController.instance.againstAI == true && currentPieceType == PieceTypes.Black)
+            GameController.instance.ChangeGameState(GameStates.AIMoviment);
+        else
+            GameController.instance.ChangeGameState(GameStates.Running);
     }
 
     public bool CanCheckMoves()
