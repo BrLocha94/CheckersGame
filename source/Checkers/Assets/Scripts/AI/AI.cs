@@ -138,6 +138,9 @@ public class AI : MonoBehaviour
         //list all plays
         ListPossibleMoves();
 
+        if (listAvaliableMoves.Count == 0)
+            return null;
+
         List<AIMoviment> priorityMoves = new List<AIMoviment>();
 
         //get possible priority plays
