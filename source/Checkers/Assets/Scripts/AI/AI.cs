@@ -1,25 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
-
-public class Play
-{
-    public BoardPiece piece { get; set; }
-    public BoardTile target { get; set; }
-    public BoardPiece eliminatedBy { get; set; }
-}
 
 public class AI : MonoBehaviour
 {
-    BoardTile[,] board;
-    List<BoardPiece> pieces;
-    List<BoardInfoHolder> listAvaliableMoves = new List<BoardInfoHolder>(); //possible piece moves
-    Dictionary<BoardPiece, List<BoardInfoHolder>> dictionaryAvaliableMoves = new Dictionary<BoardPiece, List<BoardInfoHolder>>(); //listing all piece moves in a dictionary
-    //bool mandatoryMove;
+    [SerializeField]
+    private float timeToStartCalculation = 1f;
 
-    BoardPiece eliminated = new BoardPiece(); //piece that will be eliminated
-    Dictionary<BoardPiece, BoardPiece> eliminatedByPiece = new Dictionary<BoardPiece, BoardPiece>(); //get pieces that will be eliminated by a piece moviment
+    BoardTile[,] board;
+    List<BoardPiece> pieces = new List<BoardPiece>();
+    List<AIMoviment> listAvaliableMoves = new List<AIMoviment>();
+
+    #region AIRegion
+
+    public GameStates currentGameState { get; private set; }
+
+    void OnGameStateChange(GameStates newGameState)
+    {
+        currentGameState = newGameState;
+
+        if (newGameState == GameStates.AIMoviment)
+            StartCoroutine(IaMovimentRoutine(timeToStartCalculation));
+    }
+
+    private void OnEnable()
+    {
+        GameController.onGameStateChange += OnGameStateChange;
+    }
+
+    private void OnDisable()
+    {
+        GameController.onGameStateChange -= OnGameStateChange;
+    }
+
+    #endregion
 
     bool OnBoardLimits(int row, int column)
     {
@@ -30,39 +44,26 @@ public class AI : MonoBehaviour
         return true;
     }
 
-    bool AIKingTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
+    bool AIKingTile(BoardPiece actualPiece, int row, int column, int rowFactor, int columnFactor, PieceTypes targetType)
     {
-        bool check = AIBoardTile(row, column, rowFactor, columnFactor, targetType, true);
-
-        Debug.Log(check);
-
-        return check;
+        return AIBoardTile(actualPiece, row, column, rowFactor, columnFactor, targetType, true);
     }
 
-    bool AIBoardTile(int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
+    bool AIBoardTile(BoardPiece actualPiece, int row, int column, int rowFactor, int columnFactor, PieceTypes targetType, bool isKing = false, BoardPiece lastPiece = null)
     {
         if (OnBoardLimits(row, column) == false) return false;
 
         if (board[row, column].currentPiece == null)
         {
-            if (lastPiece != null)
-            {
-                board[row, column].ApplyColorEffect(false);
-            }
-            else
-                board[row, column].ApplyColorEffect(true);
+            AIMoviment newMove = new AIMoviment();
+            newMove.piece = actualPiece;
+            newMove.target = board[row, column];
+            newMove.eliminatedBy = lastPiece;
 
-            BoardInfoHolder newInfo = new BoardInfoHolder();
-            newInfo.piece = lastPiece;
-            newInfo.tile = board[row, column];
-
-            listAvaliableMoves.Add(newInfo);
-            eliminated = lastPiece;
-            
+            listAvaliableMoves.Add(newMove);
 
             if (isKing == true)
-                AIBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
-
+                AIBoardTile(actualPiece, row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, lastPiece);
 
             return true;
         }
@@ -73,7 +74,7 @@ public class AI : MonoBehaviour
             if (board[row, column].currentPiece.CheckPieceType(targetType))
                 return false;
 
-            return AIBoardTile(row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, board[row, column].currentPiece);
+            return AIBoardTile(actualPiece, row + rowFactor, column + columnFactor, rowFactor, columnFactor, targetType, isKing, board[row, column].currentPiece);
         }
 
         return false;
@@ -83,15 +84,16 @@ public class AI : MonoBehaviour
     {
         board = null;
         pieces.Clear();
-        dictionaryAvaliableMoves.Clear();
-        //initiate game board
+
         board = Board.instance.GetBoard();
+        listAvaliableMoves = new List<AIMoviment>();
+
         //checking dark pieces
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int j = 0; j < board.GetLength(1); j++)
             {
-                if(board[i,j].currentPiece == null)
+                if (board[i, j].currentPiece == null)
                     continue;
 
                 if (board[i, j].currentPiece.CheckPieceType(PieceTypes.Black))
@@ -103,8 +105,6 @@ public class AI : MonoBehaviour
         //list possible piece moves
         for (int i = 0; i < pieces.Count; i++)
         {
-            eliminated = new BoardPiece();
-            listAvaliableMoves.Clear();
             //getting piece tile coordinates
             int actualRow = pieces[i].currentTile.row;
             int actualCol = pieces[i].currentTile.column;
@@ -112,54 +112,64 @@ public class AI : MonoBehaviour
             if (pieces[i].IsKing()) //if the actual piece is a king
             {
                 //checking diagonals
-                bool downRight = AIKingTile(actualRow + 1, actualCol + 1, 1, 1, PieceTypes.White);
-                bool downLeft = AIKingTile(actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
-                bool upRight = AIKingTile(actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
-                bool upLeft = AIKingTile(actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
+                bool downRight = AIKingTile(pieces[i], actualRow + 1, actualCol + 1, 1, 1, PieceTypes.Black);
+                bool downLeft = AIKingTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.Black);
+                bool upRight = AIKingTile(pieces[i], actualRow - 1, actualCol + 1, -1, 1, PieceTypes.Black);
+                bool upLeft = AIKingTile(pieces[i], actualRow - 1, actualCol - 1, -1, -1, PieceTypes.Black);
             }
             else
             {
                 if (pieces[i].IsDownMoviment())
                 {
-                    bool upRight = AIBoardTile(actualRow - 1, actualCol + 1, -1, 1, PieceTypes.White);
-                    bool upLeft = AIBoardTile(actualRow - 1, actualCol - 1, -1, -1, PieceTypes.White);
+                    bool upRight = AIBoardTile(pieces[i], actualRow - 1, actualCol + 1, -1, 1, PieceTypes.Black);
+                    bool upLeft = AIBoardTile(pieces[i], actualRow - 1, actualCol - 1, -1, -1, PieceTypes.Black);
                 }
                 else
                 {
-                    bool downRight = AIBoardTile(actualRow + 1, actualCol + 1, 1, 1, PieceTypes.White);
-                    bool downLeft = AIBoardTile(actualRow + 1, actualCol - 1, 1, -1, PieceTypes.White);
+                    bool downRight = AIBoardTile(pieces[i], actualRow + 1, actualCol + 1, 1, 1, PieceTypes.Black);
+                    bool downLeft = AIBoardTile(pieces[i], actualRow + 1, actualCol - 1, 1, -1, PieceTypes.Black);
                 }
             }
-
-            dictionaryAvaliableMoves.Add(pieces[i], listAvaliableMoves);
-            eliminatedByPiece.Add(pieces[i], eliminated);
         }
     }
 
-    Play AIPlay()
+    AIMoviment AIPlay()
     {
-        //when it's possible to eliminate, the ai should do a eliminate play
-        //when it's not, the ai should do a random piece play
+        //list all plays
         ListPossibleMoves();
-        Play p = new Play();
-        
-        // gerando uma lista de keys (pecas)
-        List<BoardPiece> playablePieces = new List<BoardPiece>(dictionaryAvaliableMoves.Keys);
-        
-        // sorteando um index para pegar uma peça da lista 
-        int pieceIndex = Random.Range(0, dictionaryAvaliableMoves.Count - 1);
-        
-        p.piece = playablePieces[pieceIndex];
 
-        // sorteando o index do movimento que a peça ira fazer
-        int moveIndex = Random.Range(0, dictionaryAvaliableMoves[p.piece].Count - 1);
-        
-        //define o alvo depois de escolher o tile possivel de jogada
-        p.target = dictionaryAvaliableMoves[p.piece][moveIndex].tile;
+        if (listAvaliableMoves.Count == 0)
+            return null;
 
-        //define a peça eliminada pela jogada
-        p.eliminatedBy = eliminatedByPiece[p.piece];
+        List<AIMoviment> priorityMoves = new List<AIMoviment>();
 
-        return p;
+        //get possible priority plays
+        for(int i = 0; i < listAvaliableMoves.Count; i++)
+        {
+            if(listAvaliableMoves[i].eliminatedBy != null)
+            {
+                priorityMoves.Add(listAvaliableMoves[i]);
+            }
+        }
+        //if there is a priority play, it will be played
+        if(priorityMoves.Count > 0)
+        {
+            int rand = Random.Range(0, priorityMoves.Count);
+            return priorityMoves[rand];
+        }
+        else //if there's not, play a random avaliable move
+        {
+            int rand = Random.Range(0, listAvaliableMoves.Count);
+            return listAvaliableMoves[rand];
+        }
+    }
+
+    IEnumerator IaMovimentRoutine(float timer)
+    {
+        yield return new WaitForSeconds(timer);
+
+        AIMoviment moviment = AIPlay();
+
+        Board.instance.AIMove(moviment);
     }
 }
