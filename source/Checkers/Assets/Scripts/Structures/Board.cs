@@ -338,16 +338,18 @@ public class Board : MonoSingleton<Board>
 
     public void AIMove(AIMoviment moviment)
     {
-        if (moviment.piece == null)
+        if(moviment == null)
         {
-            Debug.Log("AI moviment piece is null");
+            Debug.Log("moviment from AI is null...GOING TO NEXT TURN");
             NextTurn();
             return;
         }
 
+        if (moviment.piece == null) Debug.Log("AI moviment piece is null");
+
         if (moviment.target == null) Debug.Log("AI moviment tile is null");
 
-        if (moviment.eliminatedBy == null) Debug.Log("AI moviment emilimated piece is null");
+        //if (moviment.eliminatedBy == null) Debug.Log("AI moviment emilimated piece is null");
 
         MovePiece(moviment.piece, moviment.target);
 

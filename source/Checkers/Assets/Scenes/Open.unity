@@ -632,7 +632,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 950387850}
-  - component: {fileID: 950387849}
   - component: {fileID: 950387848}
   - component: {fileID: 950387847}
   - component: {fileID: 950387846}
@@ -703,28 +702,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 30
   m_TargetDisplay: 0
---- !u!114 &950387849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950387845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c54f260e528877e41b7760aa57a2dd3f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buttonPauseOver: {fileID: 0}
-  textTime: {fileID: 0}
-  imageCurrentPiece: {fileID: 0}
-  colorPieceWhite: {r: 1, g: 1, b: 1, a: 1}
-  colorPieceBlack: {r: 1, g: 0.0627451, b: 0.0627451, a: 1}
-  windowFume: {fileID: 0}
-  windowIntro: {fileID: 0}
-  windowTutorial: {fileID: 0}
-  windowConfirm: {fileID: 0}
-  windowGameOver: {fileID: 0}
 --- !u!224 &950387850
 RectTransform:
   m_ObjectHideFlags: 0
