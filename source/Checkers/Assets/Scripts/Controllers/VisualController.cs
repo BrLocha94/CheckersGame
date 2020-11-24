@@ -45,6 +45,10 @@ public class VisualController : MonoSingleton<VisualController>
 
         if (currentGameState == GameStates.Intro)
             TurnIntroOn();
+        else if (currentGameState == GameStates.GameClear ||
+                currentGameState == GameStates.GameOver ||
+                currentGameState == GameStates.Draw)
+            TurnGameOverOn();
     }
 
     private void OnEnable()
